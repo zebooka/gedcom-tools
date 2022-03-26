@@ -1,10 +1,10 @@
 
-all: test install
+all: composer test install
 
 composer:
 	docker-compose -f docker-compose.composer.yml up
 
-test: composer
+test:
 	docker-compose -f docker-compose.tests.yml up
 
 install: composer
