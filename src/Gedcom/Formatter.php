@@ -16,7 +16,8 @@ class Formatter
         $gedcom = '';
         foreach ($dom->documentElement->childNodes as $childNode) {
             if ($childNode instanceof \DOMElement) {
-                $gedcom .= self::composeLinesFromElement($childNode, 0) . PHP_EOL;
+                $line = self::composeLinesFromElement($childNode, 0);
+                $gedcom .= ($line !== '' ? $line . PHP_EOL : '');
             }
         }
         return $gedcom;
@@ -24,48 +25,31 @@ class Formatter
 
     public static function formatSimpleXMLElement(\SimpleXMLElement $sxml)
     {
-        $gedcom = '';
-        foreach ($sxml->children() as $childNode) {
-            $gedcom .= self::composeLinesFromElement($childNode, 0) . PHP_EOL;
-        }
-        return $gedcom;
+        return self::formatDOMDocument(dom_import_simplexml($sxml)->ownerDocument);
     }
 
     /**
-     * @param \DOMElement|\SimpleXMLElement $element
+     * @param \DOMElement $element
      * @param int $level
      * @return string
      */
-    public static function composeLinesFromElement($element, $level)
+    public static function composeLinesFromElement(\DOMElement $element, $level)
     {
-        if ($element instanceof \DOMElement) {
+        $gedcom = '';
+        if ($element->namespaceURI === Document::XML_NAMESPACE) {
             $gedcom = "{$level} "
                 . ($element->getAttribute('id') ? "@{$element->getAttribute('id')}@ " : '')
-                . ($element->nodeName)
+                . ($element->localName)
                 . (strlen('' . $element->getAttribute('xref')) ? " @{$element->getAttribute('xref')}@" : '')
                 . (strlen('' . $element->getAttribute('escape')) ? " @#{$element->getAttribute('escape')}@" : '')
                 . (strlen('' . $element->getAttribute('value')) ? " {$element->getAttribute('value')}" : '');
-
             foreach ($element->childNodes as $childNode) {
                 if ($childNode instanceof \DOMElement) {
-                    $gedcom .= PHP_EOL . self::composeLinesFromElement($childNode, $level + 1);
+                    $line = self::composeLinesFromElement($childNode, $level + 1);
+                    $gedcom .= ($line !== '' ? PHP_EOL . $line : '');
                 }
             }
-        } elseif ($element instanceof \SimpleXMLElement) {
-            $gedcom = "{$level} "
-                . ($element['id'] ? "@{$element['id']}@ " : '')
-                . ($element->getName())
-                . (strlen('' . $element['xref']) ? " @{$element['xref']}@" : '')
-                . (strlen('' . $element['escape']) ? " @#{$element['escape']}@" : '')
-                . (strlen('' . $element['value']) ? " {$element['value']}" : '');
-            ;
-            foreach ($element->children() as $childNode) {
-                $gedcom .= PHP_EOL . self::composeLinesFromElement($childNode, $level + 1);
-            }
-        } else {
-            throw new \UnexpectedValueException('Unsupported element class: ' . get_class($element));
         }
-
         return $gedcom;
     }
 }

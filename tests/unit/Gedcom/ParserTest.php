@@ -46,7 +46,7 @@ class ParserTest extends TestCase
 GEDCOM;
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<GEDCOM xmlns="https://zebooka.com/gedcom">
+<GEDCOM xmlns="https://zebooka.com/gedcom/">
     <HEAD>
         <SOUR value="TEST">
             <VERS value="1.2.3"/>

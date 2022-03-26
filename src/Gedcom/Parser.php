@@ -9,7 +9,6 @@ class Parser
     const ENCODING_UNICODE = 'UNICODE';
     const ENCODING_UTF8 = 'UTF-8';
 
-    const XML_NAMESPACE = 'https://zebooka.com/gedcom';
     const LINE_REGEXP = '/^\s*(?<level>[1-9]?[0-9])(?: @(?<id>.{1,80})@)?(?: (?<tag>[A-Z0-9_]{0,32}))(?: (?:(?:@(?<xref>[^#].*)@)|((?:@#(?<escape>.+)@ )?(?<value>.*))))?$/i';
 
     public static function createElementFromLine($line, &$stack)
@@ -55,7 +54,7 @@ class Parser
         // TODO add encoding and namespace
         $gedcom = explode("\n", str_replace("\r", "\n", $gedcom));
         $xml = sprintf('<?xml version="1.0" encoding="%s"?>', $encoding) . PHP_EOL
-            . sprintf('<GEDCOM xmlns="%s">', htmlspecialchars(self::XML_NAMESPACE));
+            . sprintf('<GEDCOM xmlns="%s">', htmlspecialchars(Document::XML_NAMESPACE));
         $stack = [];
         foreach ($gedcom as $line) {
             $xml .= self::createElementFromLine($line, $stack);

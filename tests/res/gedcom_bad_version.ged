@@ -1,0 +1,23 @@
+0 HEAD
+1 GEDC
+2 VERS 1.2.3
+1 NOTE Test
+0 @SON@ INDI
+1 NAME Full Name /FAMILY/
+2 GIVN Full, Name
+2 SURN FAMILY
+1 SEX M
+1 BIRT
+2 DATE 1 FEB 2003
+2 NOTE Multi
+3 CONC line
+3 CONT text with con
+3 CONC catenation
+1 FAMC @FAM@
+0 @DAUGHTER@ INDI
+1 NAME Full Name /FAMILY/
+2 GIVN Full, Name
+2 SURN FAMILY
+1 SEX F
+1 FAMC @FAM@
+0 TAIL

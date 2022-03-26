@@ -4,6 +4,8 @@ namespace Zebooka\Gedcom;
 
 class Document
 {
+    const XML_NAMESPACE = 'https://zebooka.com/gedcom/';
+
     private $sxml;
     private $dom;
 

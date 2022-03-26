@@ -26,7 +26,7 @@ GEDCOM;
     {
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<GEDCOM xmlns="https://zebooka.com/gedcom/5.5.1">
+<GEDCOM xmlns="https://zebooka.com/gedcom/">
     <HEAD>
         <SOUR value="TEST">
             <VERS value="1.2.3"/>
@@ -39,6 +39,29 @@ GEDCOM;
     </SUBM>
     <TRLR/>
 </GEDCOM>
+
+XML;
+    }
+
+    private function xmlWithNoise()
+    {
+        return <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<g:GEDCOM xmlns:g="https://zebooka.com/gedcom/" xmlns:noise="https://example.com/noise">
+    <noise:test>123</noise:test>
+    <g:HEAD noise:attrib="value" noise:value="hello world">
+        <g:SOUR value="TEST">
+            <g:VERS value="1.2.3"/>
+        </g:SOUR>
+        <noise:another>456</noise:another>
+        <g:DATE escape="DJULIAN" value="27 JAN 2019"/>
+        <g:SUBM xref="SUBMITTER1"/>
+    </g:HEAD>
+    <g:SUBM id="SUBMITTER1">
+        <g:NAME value="Submitter Name"/>
+    </g:SUBM>
+    <g:TRLR/>
+</g:GEDCOM>
 
 XML;
     }
@@ -66,6 +89,32 @@ XML;
         $this->assertEquals(
             str_replace("\r", '', $this->gedcom()),
             str_replace("\r", '', Formatter::formatSimpleXMLElement(new \SimpleXMLElement($this->xml())))
+        );
+    }
+
+    public function test_additionalNamespacesAreFiltered()
+    {
+        $this->assertEquals(
+            str_replace("\r", '', $this->gedcom()),
+            str_replace("\r", '', Formatter::formatXML($this->xmlWithNoise()))
+        );
+    }
+
+    public function test_additionalNamespacesAreFilteredFromDOMDocument()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML($this->xmlWithNoise());
+        $this->assertEquals(
+            str_replace("\r", '', $this->gedcom()),
+            str_replace("\r", '', Formatter::formatDOMDocument($dom))
+        );
+    }
+
+    public function test_additionalNamespacesAreFilteredFromSimpleXMLElement()
+    {
+        $this->assertEquals(
+            str_replace("\r", '', $this->gedcom()),
+            str_replace("\r", '', Formatter::formatSimpleXMLElement(new \SimpleXMLElement($this->xmlWithNoise())))
         );
     }
 }
