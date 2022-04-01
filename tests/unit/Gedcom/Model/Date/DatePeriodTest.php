@@ -55,7 +55,7 @@ class DatePeriodTest extends TestCase
         $this->assertMatchesRegularExpression(DatePeriod::REGEXP, $value);
     }
 
-    public function test_DatePeriod_expty_fromString_throws_exception()
+    public function test_DatePeriod_empty_fromString_throws_exception()
     {
         $this->expectExceptionObject(new \UnexpectedValueException('Please supply any of FROM/TO dates (or both) for period.'));
         DatePeriod::fromString('');

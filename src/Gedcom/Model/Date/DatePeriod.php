@@ -29,7 +29,7 @@ class DatePeriod
 
         return new self(
             !empty($m['from']) ? DateExact::fromString($m['from']) : null,
-            !empty($m['to']) ? DateExact::fromString($m['to']) : null,
+            !empty($m['to']) ? DateExact::fromString($m['to']) : null
         );
     }
 
