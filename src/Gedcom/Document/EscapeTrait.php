@@ -22,7 +22,6 @@ trait EscapeTrait
         return ($value !== '' && $value[0] === '@' ? '@' : '') . $value;
     }
 
-
     /**
      * @param string $value
      * @return string

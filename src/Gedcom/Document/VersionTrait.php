@@ -4,6 +4,8 @@ namespace Zebooka\Gedcom\Document;
 
 trait VersionTrait
 {
+    use DocumentTrait;
+
     /**
      * Get document version from HEAD.SOUR.VERS tag
      * @return string|null

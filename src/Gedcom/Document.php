@@ -3,13 +3,15 @@
 namespace Zebooka\Gedcom;
 
 use Zebooka\Gedcom\Document\EscapeTrait;
-use Zebooka\Gedcom\Document\ShortcutsTrait;
+use Zebooka\Gedcom\Document\HeadTrait;
+use Zebooka\Gedcom\Document\IndiTrait;
 use Zebooka\Gedcom\Document\VersionTrait;
 
 class Document
 {
     use EscapeTrait,
-        ShortcutsTrait,
+        HeadTrait,
+        IndiTrait,
         VersionTrait;
 
     const XML_NAMESPACE = 'https://zebooka.com/gedcom/';
@@ -62,7 +64,12 @@ class Document
         return $this->dom;
     }
 
-    public function xpath($expression, $contextNode = null)
+    /**
+     * @param string $expression
+     * @param \DOMNode|null $contextNode
+     * @return mixed|\DOMNodeList|\DOMNode|\DOMElement|\DOMAttr
+     */
+    public function xpath($expression, \DOMNode $contextNode = null)
     {
         $xpath = new \DOMXPath($this->dom);
         $xpath->registerNamespace('G', Document::XML_NAMESPACE);
