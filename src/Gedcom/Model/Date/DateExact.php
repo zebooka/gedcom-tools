@@ -17,6 +17,8 @@ class DateExact
         '' => ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
         self::CAL_GREGORIAN => ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
         self::CAL_JULIAN => ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+        self::CAL_FRENCH_REVOLUTION => ['VEND', 'BRUM', 'FRIM', 'NIVO', 'PLUV', 'VENT', 'GERM', 'FLOR', 'PRAI', 'MESS', 'THER', 'FRUC', 'COMP'],
+        self::CAL_HEBREW => ['TSH', 'CSH', 'KSL', 'TVT', 'SHV', 'ADR', 'ADS', 'NSN', 'IYR', 'SVN', 'TMZ', 'AAV', 'ELL'],
     ];
 
     /** @var string|null */
@@ -65,9 +67,9 @@ class DateExact
             throw new \UnexpectedValueException("Unable to decode exact date string '{$string}'.");
         }
         return new self(
-            (int) $m['year'],
+            (int)$m['year'],
             $m['month'] ?? null,
-            (int) $m['day'] ?? null,
+            (int)$m['day'] ?? null,
             $m['calendar'] ?? null,
             $m['epoch'] ?? null
         );
