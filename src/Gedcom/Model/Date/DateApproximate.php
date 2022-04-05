@@ -2,11 +2,15 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
-class DateApprox
+use Zebooka\Gedcom\Model\DateInterface;
+
+class DateApproximate implements DateInterface
 {
     const ABOUT = 'ABT';
     const CALCULATED = 'CAL';
     const ESTIMATED = 'EST';
+
+    const REGEXP = '/^(?<approx>(?:ABT|CAL|EST))\s+(?<date>.+)$/';
 
     /** @var string */
     private $approx;
@@ -22,7 +26,16 @@ class DateApprox
         $this->date = $date;
     }
 
-    public function __toString()
+    public static function fromString(string $string): self
+    {
+        if (!preg_match(self::REGEXP, $string, $m)) {
+            throw new \UnexpectedValueException("Unable to decode approx date string '{$string}'.");
+        }
+
+        return new self($m['approx'], DateExact::fromString($m['date']));
+    }
+
+    public function __toString(): string
     {
         return "{$this->approx} {$this->date}";
     }

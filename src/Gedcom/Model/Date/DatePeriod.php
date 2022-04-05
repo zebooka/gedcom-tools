@@ -2,11 +2,10 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
-class DatePeriod
-{
-    const FROM = 'FROM';
-    const TO = 'TO';
+use Zebooka\Gedcom\Model\DateInterface;
 
+class DatePeriod implements DateInterface
+{
     const REGEXP = '/^(?:FROM\s+(?<from>.+))?(^|\s+|$)(?:TO\s+(?<to>.+))?$/';
 
     private $from;
@@ -21,7 +20,7 @@ class DatePeriod
         $this->to = $to;
     }
 
-    public static function fromString($string)
+    public static function fromString(string $string): self
     {
         if (!preg_match(self::REGEXP, $string, $m)) {
             throw new \UnexpectedValueException("Unable to decode period date string '{$string}'.");
@@ -33,7 +32,7 @@ class DatePeriod
         );
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ($this->from ? "FROM {$this->from}" : '')
             . ($this->from && $this->to ? ' ' : '')

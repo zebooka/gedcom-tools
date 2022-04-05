@@ -20,11 +20,11 @@ class ParserTest extends TestCase
         $this->assertEquals('', Parser::createElementFromLine('',$stack));
         $this->assertEquals(['HEAD', 'SOUR', 'VERS'], $stack);
         $this->assertEquals('</VERS></SOUR><DATE escape="DJULIAN" value="27 JAN 2019">', Parser::createElementFromLine('1 DATE @#DJULIAN@ 27 JAN 2019',$stack));
-        $this->assertEquals('</DATE><SUBM xref="SUBMITTER1">', Parser::createElementFromLine('1 SUBM @SUBMITTER1@',$stack));
+        $this->assertEquals('</DATE><SUBM pointer="SUBMITTER1">', Parser::createElementFromLine('1 SUBM @SUBMITTER1@',$stack));
         $this->assertEquals(['HEAD', 'SUBM'], $stack);
         $this->assertEquals('</SUBM></HEAD>', Parser::closeTags($stack, 0));
         $this->assertEquals([], $stack);
-        $this->assertEquals('<SUBM id="SUBMITTER1">', Parser::createElementFromLine('0 @SUBMITTER1@ SUBM',$stack));
+        $this->assertEquals('<SUBM xref="SUBMITTER1">', Parser::createElementFromLine('0 @SUBMITTER1@ SUBM',$stack));
         $this->assertEquals('<NAME value="Submitter Name">', Parser::createElementFromLine('1 NAME Submitter Name',$stack));
         $this->assertEquals('</NAME></SUBM>', Parser::closeTags($stack, 0));
         $this->assertEquals([], $stack);
@@ -52,9 +52,9 @@ GEDCOM;
             <VERS value="1.2.3"/>
         </SOUR>
         <DATE escape="DJULIAN" value="27 JAN 2019"/>
-        <SUBM xref="SUBMITTER1"/>
+        <SUBM pointer="SUBMITTER1"/>
     </HEAD>
-    <SUBM id="SUBMITTER1">
+    <SUBM xref="SUBMITTER1">
         <NAME value="Submitter Name"/>
     </SUBM>
     <TRLR/>

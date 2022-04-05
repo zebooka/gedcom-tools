@@ -9,7 +9,7 @@ class Parser
     const ENCODING_UNICODE = 'UNICODE';
     const ENCODING_UTF8 = 'UTF-8';
 
-    const LINE_REGEXP = '/^\s*(?<level>[1-9]?[0-9])(?: @(?<id>.{1,80})@)?(?: (?<tag>[A-Z0-9_]{0,32}))(?: (?:(?:@(?<xref>[^#].*)@)|((?:@#(?<escape>.+)@ )?(?<value>.*))))?$/i';
+    const LINE_REGEXP = '/^\s*(?<level>[1-9]?[0-9])(?: @(?<xref>.{1,80})@)?(?: (?<tag>[A-Z0-9_]{0,32}))(?: (?:(?:@(?<pointer>[^#].*)@)|((?:@#(?<escape>.+)@ )?(?<value>.*))))?$/i';
 
     public static function createElementFromLine($line, &$stack)
     {
@@ -27,8 +27,8 @@ class Parser
         $close = self::closeTags($stack, (int)$matches['level']);
         array_push($stack, $matches['tag']);
         return $close . '<' . $matches['tag']
-            . (isset($matches['id']) && '' !== $matches['id'] ? ' id="' . htmlspecialchars($matches['id']) . '"' : '')
             . (isset($matches['xref']) && '' !== $matches['xref'] ? ' xref="' . htmlspecialchars($matches['xref']) . '"' : '')
+            . (isset($matches['pointer']) && '' !== $matches['pointer'] ? ' pointer="' . htmlspecialchars($matches['pointer']) . '"' : '')
             . (isset($matches['escape']) && '' !== $matches['escape'] ? ' escape="' . htmlspecialchars($matches['escape']) . '"' : '')
             . (isset($matches['value']) && '' !== $matches['value'] ? ' value="' . htmlspecialchars($matches['value']) . '"' : '')
             . '>';

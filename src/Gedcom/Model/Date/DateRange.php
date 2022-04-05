@@ -2,13 +2,10 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
-class DateRange
-{
-    const BET = 'BET';
-    const AND = 'AND';
-    const BEF = 'BEF';
-    const AFT = 'AFT';
+use Zebooka\Gedcom\Model\DateInterface;
 
+class DateRange implements DateInterface
+{
     const REGEXP = '/^(?:(BET\s+(?<between>.+)\s+AND\s+(?<and>.+))|(BEF\s+(?<before>.+))|(AFT\s+(?<after>.+)))?$/';
 
     private $after;
@@ -23,7 +20,7 @@ class DateRange
         $this->before = $before;
     }
 
-    public static function fromString($string)
+    public static function fromString(string $string): self
     {
         if (!preg_match(self::REGEXP, $string, $m)) {
             throw new \UnexpectedValueException("Unable to decode period date string '{$string}'.");
@@ -42,7 +39,7 @@ class DateRange
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->after && $this->before) {
             return "BET {$this->after} AND {$this->before}";

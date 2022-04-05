@@ -2,7 +2,9 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
-class DateExact
+use Zebooka\Gedcom\Model\DateInterface;
+
+class DateExact implements DateInterface
 {
     const CAL_GREGORIAN = 'GREGORIAN';
     const CAL_JULIAN = 'JULIAN';
