@@ -11,7 +11,7 @@ class DateRange implements DateInterface
     private $after;
     private $before;
 
-    public function __construct(DateExact $after = null, DateExact $before = null)
+    public function __construct(DateCalendarInterface $after = null, DateCalendarInterface $before = null)
     {
         if (!$after && !$before) {
             throw new \UnexpectedValueException('Please supply any of AFT/BEF dates (or both) for period.');
@@ -28,13 +28,13 @@ class DateRange implements DateInterface
 
         if (!empty($m['between']) && !empty($m['and'])) {
             return new self(
-                DateExact::fromString($m['between']),
-                DateExact::fromString($m['and'])
+                DateCalendar::fromString($m['between']),
+                DateCalendar::fromString($m['and'])
             );
         } else {
             return new self(
-                !empty($m['after']) ? DateExact::fromString($m['after']) : null,
-                !empty($m['before']) ? DateExact::fromString($m['before']) : null
+                !empty($m['after']) ? DateCalendar::fromString($m['after']) : null,
+                !empty($m['before']) ? DateCalendar::fromString($m['before']) : null
             );
         }
     }

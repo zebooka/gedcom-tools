@@ -3,7 +3,8 @@
 namespace Test\Zebooka\Gedcom\Model\Date;
 
 use PHPUnit\Framework\TestCase;
-use Zebooka\Gedcom\Model\Date\DateExact;
+use Zebooka\Gedcom\Model\Date\DateCalendar;
+use Zebooka\Gedcom\Model\Date\DateCalendarInterface;
 use Zebooka\Gedcom\Model\Date\DatePeriod;
 
 class DatePeriodTest extends TestCase
@@ -14,11 +15,11 @@ class DatePeriodTest extends TestCase
     }
 
     /**
-     * @return \Mockery\LegacyMockInterface|\Mockery\MockInterface|null|DateExact
+     * @return \Mockery\LegacyMockInterface|\Mockery\MockInterface|null|DateCalendar
      */
     private function dateExactMock($string)
     {
-        return \Mockery::mock(DateExact::class)
+        return \Mockery::mock(DateCalendarInterface::class)
             ->shouldReceive('__toString')
             ->andReturn($string)
             ->getMock();

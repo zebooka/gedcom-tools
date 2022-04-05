@@ -6,12 +6,12 @@ use Zebooka\Gedcom\Model\DateInterface;
 
 class DatePeriod implements DateInterface
 {
-    const REGEXP = '/^(?:FROM\s+(?<from>.+))?(^|\s+|$)(?:TO\s+(?<to>.+))?$/';
+    const REGEXP = '/^(?:FROM\s+(?<from>.+?))?(^|\s+|$)(?:TO\s+(?<to>.+))?$/';
 
     private $from;
     private $to;
 
-    public function __construct(DateExact $from = null, DateExact $to = null)
+    public function __construct(DateCalendarInterface $from = null, DateCalendarInterface $to = null)
     {
         if (!$from && !$to) {
             throw new \UnexpectedValueException('Please supply any of FROM/TO dates (or both) for period.');
@@ -27,8 +27,8 @@ class DatePeriod implements DateInterface
         }
 
         return new self(
-            !empty($m['from']) ? DateExact::fromString($m['from']) : null,
-            !empty($m['to']) ? DateExact::fromString($m['to']) : null
+            !empty($m['from']) ? DateCalendar::fromString($m['from']) : null,
+            !empty($m['to']) ? DateCalendar::fromString($m['to']) : null
         );
     }
 

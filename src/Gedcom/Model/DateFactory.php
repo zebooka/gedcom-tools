@@ -3,7 +3,7 @@
 namespace Zebooka\Gedcom\Model;
 
 use Zebooka\Gedcom\Model\Date\DateApproximate;
-use Zebooka\Gedcom\Model\Date\DateExact;
+use Zebooka\Gedcom\Model\Date\DateCalendar;
 use Zebooka\Gedcom\Model\Date\DatePeriod;
 use Zebooka\Gedcom\Model\Date\DateRange;
 
@@ -18,7 +18,7 @@ class DateFactory
         } elseif (preg_match(DateApproximate::REGEXP, $string)) {
             return DateApproximate::fromString($string);
         } else {
-            return DateExact::fromString($string);
+            return DateCalendar::fromString($string);
         }
     }
 }
