@@ -24,7 +24,7 @@ class DateHebrew implements DateInterface, DateCalendarInterface
     /** @var int */
     private $year;
 
-    public function __construct(int $year, string $month = null, int $day = null, string $calendar = self::CALENDAR_5)
+    public function __construct(int $year, ?string $month = null, ?int $day = null, string $calendar = self::CALENDAR_5)
     {
         if (!$month && $day) {
             throw new \UnexpectedValueException('Day without month is not allowed.');
@@ -56,7 +56,7 @@ class DateHebrew implements DateInterface, DateCalendarInterface
 
         return new self(
             (int)$m['year'],
-            $m['month'] ?? null,
+            !empty($m['month']) ? $m['month'] : null,
             !empty($m['day']) ? (int)$m['day'] : null,
             $m['calendar']
         );

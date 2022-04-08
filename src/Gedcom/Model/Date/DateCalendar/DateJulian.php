@@ -2,6 +2,8 @@
 
 namespace Zebooka\Gedcom\Model\Date\DateCalendar;
 
+use Fisharebest\ExtCalendar\JulianCalendar;
+use Fisharebest\ExtCalendar\Shim;
 use Zebooka\Gedcom\Model\Date\DateCalendarInterface;
 use Zebooka\Gedcom\Model\DateInterface;
 
@@ -24,13 +26,16 @@ class DateJulian implements DateInterface, DateCalendarInterface
     /** @var string|null */
     private $month;
 
+    /** @var int|null */
+    private $monthDigital;
+
     /** @var int */
     private $year;
 
     /** @var string|null */
     private $epoch;
 
-    public function __construct(int $year, string $month = null, int $day = null, string $calendar = self::CALENDAR_5, string $epoch = null)
+    public function __construct(int $year, ?string $month = null, ?int $day = null, string $calendar = self::CALENDAR_5, ?string $epoch = null)
     {
         if (!$month && $day) {
             throw new \UnexpectedValueException('Day without month is not allowed.');
@@ -44,7 +49,8 @@ class DateJulian implements DateInterface, DateCalendarInterface
             throw new \UnexpectedValueException("Unsupported calendar value '{$calendar}'.");
         }
 
-        if (!in_array($month, [null, 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'])) {
+        $months = [null, 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        if (!in_array($month, $months)) {
             throw new \UnexpectedValueException("Unsupported month '{$month}'.");
         }
 
@@ -54,6 +60,7 @@ class DateJulian implements DateInterface, DateCalendarInterface
 
         $this->year = $year;
         $this->month = $month;
+        $this->monthDigital = array_search($month, $months);
         $this->day = $day;
         $this->calendar = $calendar;
         $this->epoch = $epoch;
@@ -67,7 +74,7 @@ class DateJulian implements DateInterface, DateCalendarInterface
 
         return new self(
             (int)$m['year'],
-            $m['month'] ?? null,
+            !empty($m['month']) ? $m['month'] : null,
             !empty($m['day']) ? (int)$m['day'] : null,
             $m['calendar'],
             $m['epoch'] ?? null
@@ -80,5 +87,16 @@ class DateJulian implements DateInterface, DateCalendarInterface
             . ($this->month ? ($this->day ? $this->day . ' ' : '') . $this->month . ' ' : '')
             . $this->year
             . ($this->epoch ? ($this->epoch === self::EPOCH_7 ? ' ' : '') . $this->epoch : '');
+    }
+
+    /**
+     * @see https://en.wikipedia.org/wiki/Conversion_between_Julian_and_Gregorian_calendars
+     * @return int|null
+     */
+    public function toTimestamp(): ?int
+    {
+        $jc = new JulianCalendar();
+        $julianDay = $jc->ymdToJd(($this->year > 0 && $this->epoch) ? -$this->year : $this->year, $this->monthDigital ?: 1, $this->day ?: 1);
+        return ($julianDay - 2440588) * 86400;
     }
 }
