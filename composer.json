@@ -11,7 +11,8 @@
     "require": {
         "php": "^7.3|^8.0",
         "ext-dom": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "fisharebest/ext-calendar": "^2.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
