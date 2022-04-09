@@ -68,4 +68,9 @@ class DateHebrew implements DateInterface, DateCalendarInterface
             . ($this->month ? ($this->day ? $this->day . ' ' : '') . $this->month . ' ' : '')
             . $this->year;
     }
+
+    public function toTimestamp(): ?int
+    {
+        throw new \RuntimeException('Not implemented yet.');
+    }
 }

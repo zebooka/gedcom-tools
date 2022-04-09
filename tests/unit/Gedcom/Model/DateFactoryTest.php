@@ -3,9 +3,12 @@
 namespace Test\Zebooka\Gedcom\Model;
 
 use PHPUnit\Framework\TestCase;
+use Zebooka\Gedcom\Model\Date\DateCalendar\DateEmpty;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateGregorian;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateHebrew;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateJulian;
+use Zebooka\Gedcom\Model\Date\DateInt;
+use Zebooka\Gedcom\Model\Date\DatePhrase;
 use Zebooka\Gedcom\Model\DateFactory;
 
 class DateFactoryTest extends TestCase
@@ -27,6 +30,9 @@ class DateFactoryTest extends TestCase
             ['HEBREW 8 SVN 5745', DateHebrew::class],
             ['@#DHEBREW@ 1 TSH 1', DateHebrew::class],
 //            ['FRENCH_R 8 FLOR 8', DateCalendar::class],
+            ['', DateEmpty::class],
+            ['INT 28 MAY 1985 (after 27 of May 1985)', DateInt::class],
+            ['(after 27 of May 1985)', DatePhrase::class],
         ];
     }
 

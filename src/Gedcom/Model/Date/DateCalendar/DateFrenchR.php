@@ -25,4 +25,9 @@ class DateFrenchR implements DateInterface, DateCalendarInterface
     {
         throw new \RuntimeException('French Revolution calendar date not implemented yet.');
     }
+
+    public function toTimestamp(): ?int
+    {
+        throw new \RuntimeException('Not implemented yet.');
+    }
 }
