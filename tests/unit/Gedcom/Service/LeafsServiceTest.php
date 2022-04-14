@@ -4,7 +4,8 @@ namespace Test\Zebooka\Gedcom\Service;
 
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Document;
-use Zebooka\Gedcom\Model\Leaf;
+use Zebooka\Gedcom\Model\Indi;
+use Zebooka\Gedcom\Model\IndiRanking;
 use Zebooka\Gedcom\Service\LeafsService;
 
 class LeafsServiceTest extends TestCase
@@ -17,29 +18,37 @@ class LeafsServiceTest extends TestCase
     public function gedcomToLeafsLadderProvider()
     {
         return [
-            ['GRANDFATHER', 0, 'GRANDMOTHER', 1],
-            ['GRANDFATHER', -1, 'FATHER', 1 + sqrt(2)],
-            ['FATHER', 1, 'MOTHER', 1],
-            ['FATHER', -1, 'SON', 1 + sqrt(pow(1 + sqrt(2), 2) + 1) + log(2)],
-            ['MOTHER', -1, 'SON', 1 + sqrt(pow(1 + sqrt(2), 2) + 1) + log(2)],
-            ['FATHER', -1, 'DAUGHTER', 1 + sqrt(pow(1 + sqrt(2), 2) + 1) + log(2)],
-            ['MOTHER', -1, 'DAUGHTER', 1 + sqrt(pow(1 + sqrt(2), 2) + 1) + log(2)],
-            ['SON', 0, 'DAUGHTER', 1 + sqrt(pow(1 + sqrt(2), 2) + 1) + log(2)],
-            ['DAUGHTER', -1, 'GRANDDAUGHTER', 1 + sqrt(pow(1 + sqrt(pow(1 + sqrt(2), 2) + 1) + log(2), 2))],
+            'Equal grands' => ['GRANDFATHER', 0, 'GRANDMOTHER'],
+            'Grand less then father' => ['GRANDFATHER', -1, 'FATHER'],
+            'Father with his parents is higher that mother without' => ['FATHER', 1, 'MOTHER'],
+            'Dead is less than living' => ['UNCLE', -1, 'FATHER'],
+            'Father having grands is less than son' => ['FATHER', -1, 'SON'],
+            'Mother is less then son' => ['MOTHER', -1, 'SON'],
+            'Father less than daughter having grand daughter' => ['FATHER', -1, 'DAUGHTER'],
+            'Mother less than daughter having grand daughter' => ['MOTHER', -1, 'DAUGHTER'],
+            'Son equals daughter regardless her grand daughter' => ['SON', 0, 'DAUGHTER'],
+            'Daughter is less than grand daughter' => ['DAUGHTER', -1, 'GRANDDAUGHTER'],
         ];
     }
 
     /**
      * @dataProvider gedcomToLeafsLadderProvider
      */
-    public function test_gedcomToLeafs($a, $eq, $b, $ranking)
+    public function test_gedcomToLeafs($a, $eq, $b)
     {
         $service = new LeafsService();
-        $leafs = $service->gedcomToLeafs($g = $this->gedcom());
-        $this->assertIsArray($leafs);
-        $this->assertCount(7, $leafs);
-        $this->assertContainsOnlyInstancesOf(Leaf::class, $leafs);
-        $this->assertEquals($eq, $leafs[$a]->ranking <=> $leafs[$b]->ranking);
-        $this->assertEqualsWithDelta($ranking, $leafs[$b]->ranking, 0.0000001);
+        $indiRankings = $service->gedcomToIndiRankings($g = $this->gedcom());
+        $this->assertIsArray($indiRankings);
+        $this->assertCount(8, $indiRankings);
+        $this->assertContainsOnlyInstancesOf(IndiRanking::class, $indiRankings);
+        $this->assertEquals($eq, $indiRankings[$a]->ranking() <=> $indiRankings[$b]->ranking());
+    }
+
+    public function test_rankingFormula()
+    {
+        $service = new LeafsService();
+        $this->assertEqualsWithDelta((1 + sqrt(1 * 1 + 2 * 2) + log(3)), $service->rankingFormula(1, 2, 3, false), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta((1 + sqrt(1.5 * 1.5 + 2.1 * 2.1) + log(2)) * 0.95, $service->rankingFormula(1.5, 2.1, 2, true), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta((1 + sqrt(4 * 4 + 0.95 * 0.95) + log(1)), $service->rankingFormula(4, 0.95, 1, false), PHP_FLOAT_EPSILON);
     }
 }
