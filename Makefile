@@ -12,3 +12,11 @@ test:
 
 install:
 	docker-compose -f docker-compose.build.yml up
+
+cleanup:
+	docker-compose \
+	-f docker-compose.yml \
+	-f docker-compose.composer.yml \
+	-f docker-compose.tests.yml \
+	-f docker-compose.build.yml \
+	down --rmi local
