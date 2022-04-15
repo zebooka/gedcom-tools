@@ -38,9 +38,9 @@ class Formatter
         $gedcom = '';
         if ($element->namespaceURI === Document::XML_NAMESPACE) {
             $gedcom = "{$level} "
-                . ($element->getAttribute('id') ? "@{$element->getAttribute('id')}@ " : '')
+                . ($element->getAttribute('xref') ? "@{$element->getAttribute('xref')}@ " : '')
                 . ($element->localName)
-                . (strlen('' . $element->getAttribute('xref')) ? " @{$element->getAttribute('xref')}@" : '')
+                . (strlen('' . $element->getAttribute('pointer')) ? " @{$element->getAttribute('pointer')}@" : '')
                 . (strlen('' . $element->getAttribute('escape')) ? " @#{$element->getAttribute('escape')}@" : '')
                 . (strlen('' . $element->getAttribute('value')) ? " {$element->getAttribute('value')}" : '');
             foreach ($element->childNodes as $childNode) {

@@ -45,5 +45,4 @@ class DateFactoryTest extends TestCase
         $this->assertEquals($value, (string)$date);
         $this->assertEquals($class, get_class($date));
     }
-
 }

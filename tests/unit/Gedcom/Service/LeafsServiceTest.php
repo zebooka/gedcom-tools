@@ -4,7 +4,6 @@ namespace Test\Zebooka\Gedcom\Service;
 
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Document;
-use Zebooka\Gedcom\Model\Indi;
 use Zebooka\Gedcom\Model\IndiRanking;
 use Zebooka\Gedcom\Service\LeafsService;
 

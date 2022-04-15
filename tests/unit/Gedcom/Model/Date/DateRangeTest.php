@@ -2,6 +2,7 @@
 
 namespace Test\Zebooka\Gedcom\Model\Date;
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Model\Date\DateCalendar;
 use Zebooka\Gedcom\Model\Date\DateCalendarInterface;
@@ -9,10 +10,7 @@ use Zebooka\Gedcom\Model\Date\DateRange;
 
 class DateRangeTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        \Mockery::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     /**
      * @return \Mockery\LegacyMockInterface|\Mockery\MockInterface|null|DateCalendar

@@ -4,43 +4,35 @@ namespace Zebooka\Gedcom\Document;
 
 trait EscapeTrait
 {
-    /**
-     * @param string $value
-     * @return string
-     */
-    public static function escape55($value)
+    public static function escape55(string $value): string
     {
         return str_replace('@', '@@', $value);
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
-    public static function escape7($value)
+    public static function escape7(string $value): string
     {
         return ($value !== '' && $value[0] === '@' ? '@' : '') . $value;
     }
 
+    public static function escapeXref(string $xref): string
+    {
+        self::validateXref($xref);
+        return '@' . $xref . '@';
+    }
+
     /**
-     * @param string $value
-     * @return string
+     * @throws \UnexpectedValueException
      */
-    public static function escapeXref($xref)
+    public static function validateXref(string $xref)
     {
         if ($xref === '') {
             throw new \UnexpectedValueException('Empty ID is not allowed.');
         } elseif (!preg_match('/^[A-Z0-9_]+$/', $xref)) {
             throw new \UnexpectedValueException('Only A-Z, 0-9 and _ are allowed in ID.');
         }
-        return '@' . $xref . '@';
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
-    public static function unescape($escapedAttr)
+    public static function unescape(string $escapedAttr): string
     {
         return str_replace('@@', '@', $escapedAttr);
     }

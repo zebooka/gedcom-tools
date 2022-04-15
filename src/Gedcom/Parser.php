@@ -9,7 +9,7 @@ class Parser
     const ENCODING_UNICODE = 'UNICODE';
     const ENCODING_UTF8 = 'UTF-8';
 
-    const LINE_REGEXP = '/^\s*(?<level>[1-9]?[0-9])(?: @(?<xref>.{1,80})@)?(?: (?<tag>[A-Z0-9_]{0,32}))(?: (?:(?:@(?<pointer>[^#].*)@)|((?:@#(?<escape>.+)@ )?(?<value>.*))))?$/i';
+    const LINE_REGEXP = '/^\s*(?<level>[1-9]?[0-9])(?: @(?<xref>.{1,80})@)?(?: (?<tag>[A-Z0-9_]{0,32}))(?: (?:(?:@(?<pointer>[^#].*)@)|(?<value>.*)))?$/i';
 
     public static function createElementFromLine($line, &$stack)
     {

@@ -12,7 +12,7 @@ class FormatterTest extends TestCase
         return <<<GEDCOM
 0 HEAD
 1 SOUR TEST
-2 VERS 1.2.3
+2 VERS 5.5.1
 1 DATE @#DJULIAN@ 27 JAN 2019
 1 SUBM @SUBMITTER1@
 0 @SUBMITTER1@ SUBM
@@ -29,12 +29,12 @@ GEDCOM;
 <GEDCOM xmlns="https://zebooka.com/gedcom/">
     <HEAD>
         <SOUR value="TEST">
-            <VERS value="1.2.3"/>
+            <VERS value="5.5.1"/>
         </SOUR>
         <DATE escape="DJULIAN" value="27 JAN 2019"/>
-        <SUBM xref="SUBMITTER1"/>
+        <SUBM pointer="SUBMITTER1"/>
     </HEAD>
-    <SUBM id="SUBMITTER1">
+    <SUBM xref="SUBMITTER1">
         <NAME value="Submitter Name"/>
     </SUBM>
     <TRLR/>
@@ -51,13 +51,13 @@ XML;
     <noise:test>123</noise:test>
     <g:HEAD noise:attrib="value" noise:value="hello world">
         <g:SOUR value="TEST">
-            <g:VERS value="1.2.3"/>
+            <g:VERS value="5.5.1"/>
         </g:SOUR>
         <noise:another>456</noise:another>
         <g:DATE escape="DJULIAN" value="27 JAN 2019"/>
-        <g:SUBM xref="SUBMITTER1"/>
+        <g:SUBM pointer="SUBMITTER1"/>
     </g:HEAD>
-    <g:SUBM id="SUBMITTER1">
+    <g:SUBM xref="SUBMITTER1">
         <g:NAME value="Submitter Name"/>
     </g:SUBM>
     <g:TRLR/>

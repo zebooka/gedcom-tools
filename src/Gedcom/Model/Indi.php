@@ -3,6 +3,7 @@
 namespace Zebooka\Gedcom\Model;
 
 use Zebooka\Gedcom\Document;
+use Zebooka\Gedcom\Formatter;
 use Zebooka\Gedcom\Model\Date\DateCalendarInterface;
 
 class Indi
@@ -32,6 +33,11 @@ class Indi
         return $this->gedcom;
     }
 
+    public function nodeToGedcomString(): string
+    {
+        return Formatter::composeLinesFromElement($this->node, 0);
+    }
+
     public function xref(): string
     {
         return $this->node->getAttribute('xref');
@@ -53,22 +59,30 @@ class Indi
         return false;
     }
 
-    public function hasNoChildren(): bool
+    public function children()
+    {
+        $result = [];
+        $xref = $this->xref();
+        $famc = $this->gedcom->xpath("/G:GEDCOM/G:FAM[G:HUSB/@pointer='{$xref}']/G:CHIL|/G:GEDCOM/G:FAM[G:WIFE/@pointer='{$xref}']/G:CHIL");
+        foreach ($famc as $chil)
+        {
+            /** @var \DOMElement $chil */
+            $result[] = new Indi($this->gedcom->indi($chil->getAttribute('pointer')), $this->gedcom);
+        }
+
+        return $result;
+    }
+
+    public function hasChildren(): int
     {
         $xref = $this->xref();
-        $fams = $this->gedcom->xpath("/G:GEDCOM/G:FAM[G:HUSB/@value='{$xref}']|/G:GEDCOM/G:FAM[G:WIFE/@value='{$xref}']");
-        if ($fams->count()) {
-            foreach ($fams as $fam) {
-                if ($this->gedcom->xpath('./G:CHIL', $fam)->count()) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        $famc = $this->gedcom->xpath("/G:GEDCOM/G:FAM[G:HUSB/@pointer='{$xref}']/G:CHIL|/G:GEDCOM/G:FAM[G:WIFE/@pointer='{$xref}']/G:CHIL");
+        $nchi = $this->gedcom->xpath('string(./G:NCHI/@value)', $this->node);
+        return max($famc->count(), $nchi);
     }
 
     public function isLeaf(): bool
     {
-        return !$this->isDead() && $this->isYoungerThan30() && $this->hasNoChildren();
+        return !$this->isDead() && $this->isYoungerThan30() && !$this->hasChildren();
     }
 }
