@@ -30,4 +30,9 @@ class DateFrenchR implements DateInterface, DateCalendarInterface
     {
         throw new \RuntimeException('Not implemented yet.');
     }
+
+    public function year(): string
+    {
+        return 'F';
+    }
 }

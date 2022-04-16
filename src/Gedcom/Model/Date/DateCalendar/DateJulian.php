@@ -99,4 +99,9 @@ class DateJulian implements DateInterface, DateCalendarInterface
         $julianDay = $jc->ymdToJd(($this->year > 0 && $this->epoch) ? -$this->year : $this->year, $this->monthDigital ?: 1, $this->day ?: 1);
         return ($julianDay - 2440588) * 86400;
     }
+
+    public function year(): string
+    {
+        return $this->year;
+    }
 }

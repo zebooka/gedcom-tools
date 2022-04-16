@@ -73,4 +73,9 @@ class DateHebrew implements DateInterface, DateCalendarInterface
     {
         throw new \RuntimeException('Not implemented yet.');
     }
+
+    public function year(): string
+    {
+        return $this->year;
+    }
 }

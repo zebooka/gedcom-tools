@@ -19,7 +19,7 @@ class IndiTest extends TestCase
     public function test_father()
     {
         $gedcom = $this->gedcom();
-        $fatherNode = $gedcom->indi('FATHER');
+        $fatherNode = $gedcom->indiNode('FATHER');
         $father = new Indi($fatherNode, $gedcom);
         $this->assertSame($fatherNode, $father->node());
         $this->assertSame($gedcom, $father->gedcom());
@@ -39,7 +39,7 @@ class IndiTest extends TestCase
     public function test_uncle()
     {
         $gedcom = $this->gedcom();
-        $uncleNode = $gedcom->indi('UNCLE');
+        $uncleNode = $gedcom->indiNode('UNCLE');
         $uncle = new Indi($uncleNode, $gedcom);
         $this->assertSame($uncleNode, $uncle->node());
         $this->assertSame($gedcom, $uncle->gedcom());

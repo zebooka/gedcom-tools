@@ -11,4 +11,6 @@ interface DateCalendarInterface extends DateInterface
     public function __toString(): string;
 
     public function toTimestamp(): ?int;
+
+    public function year(): string;
 }

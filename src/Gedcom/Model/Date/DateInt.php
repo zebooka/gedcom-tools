@@ -2,9 +2,7 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
-use Zebooka\Gedcom\Model\DateInterface;
-
-class DateInt implements DateInterface
+class DateInt implements DateCalendarInterface
 {
     const REGEXP = '/^INT\\s+(?<int>.+)\s+(?<phrase>\\(.+\\))$/';
 
@@ -32,5 +30,15 @@ class DateInt implements DateInterface
     public function __toString(): string
     {
         return "INT {$this->interpretered} {$this->phrase}";
+    }
+
+    public function toTimestamp(): ?int
+    {
+        return $this->interpretered->toTimestamp();
+    }
+
+    public function year(): string
+    {
+        return $this->interpretered->year();
     }
 }

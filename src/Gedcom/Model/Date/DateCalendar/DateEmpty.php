@@ -31,4 +31,9 @@ class DateEmpty implements DateInterface, DateCalendarInterface
     {
         return null;
     }
+
+    public function year(): string
+    {
+        return '';
+    }
 }

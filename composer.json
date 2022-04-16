@@ -11,6 +11,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "ext-dom": "*",
+        "ext-intl": "*",
         "ext-simplexml": "*",
         "fisharebest/ext-calendar": "^2.5",
         "symfony/console": "^5.4"

@@ -7,7 +7,11 @@ trait IndiTrait
     use DocumentTrait,
         EscapeTrait;
 
-    public function indi($xref = null)
+    /**
+     * Returns either one specific INDI node or all INDI nodes at once.
+     * @return \DOMElement|\DOMNode|\DOMNodeList|null
+     */
+    public function indiNode(?string $xref = null)
     {
         if ($xref !== null && $xref !== '') {
             self::validateXref($xref);

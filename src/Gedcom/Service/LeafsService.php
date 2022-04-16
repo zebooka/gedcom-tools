@@ -18,7 +18,7 @@ class LeafsService
     {
         // add all nodes to heap
         $list = [];
-        foreach ($gedcom->indi() as $node) {
+        foreach ($gedcom->indiNode() as $node) {
             /** @var \DOMElement $node */
             $indi = new Indi($node, $gedcom);
             $list[$node->getAttribute('xref')] = new IndiRanking($indi, $this->calculateRanking($indi, $gedcom));
