@@ -2,7 +2,8 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
-use Zebooka\Gedcom\Model\DateInterface;
+use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 
 class DateApproximate implements DateInterface
 {

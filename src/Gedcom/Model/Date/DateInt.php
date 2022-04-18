@@ -2,6 +2,8 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
+use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
+
 class DateInt implements DateCalendarInterface
 {
     const REGEXP = '/^INT\\s+(?<int>.+)\s+(?<phrase>\\(.+\\))$/';

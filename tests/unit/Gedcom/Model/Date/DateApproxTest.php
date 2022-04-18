@@ -6,7 +6,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Model\Date\DateApproximate;
 use Zebooka\Gedcom\Model\Date\DateCalendar;
-use Zebooka\Gedcom\Model\Date\DateCalendarInterface;
+use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 
 class DateApproxTest extends TestCase
 {

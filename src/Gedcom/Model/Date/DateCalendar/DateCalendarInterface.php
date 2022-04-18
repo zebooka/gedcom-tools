@@ -1,8 +1,8 @@
 <?php
 
-namespace Zebooka\Gedcom\Model\Date;
+namespace Zebooka\Gedcom\Model\Date\DateCalendar;
 
-use Zebooka\Gedcom\Model\DateInterface;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 
 interface DateCalendarInterface extends DateInterface
 {

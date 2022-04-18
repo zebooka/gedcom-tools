@@ -4,8 +4,9 @@ namespace Zebooka\Gedcom\Model;
 
 use Zebooka\Gedcom\Model\Date\DateApproximate;
 use Zebooka\Gedcom\Model\Date\DateCalendar;
-use Zebooka\Gedcom\Model\Date\DateCalendar\DateEmpty;
+use Zebooka\Gedcom\Model\Date\DateEmpty;
 use Zebooka\Gedcom\Model\Date\DateInt;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 use Zebooka\Gedcom\Model\Date\DatePeriod;
 use Zebooka\Gedcom\Model\Date\DatePhrase;
 use Zebooka\Gedcom\Model\Date\DateRange;

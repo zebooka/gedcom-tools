@@ -2,7 +2,7 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
-use Zebooka\Gedcom\Model\DateInterface;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 
 class DatePhrase implements DateInterface
 {

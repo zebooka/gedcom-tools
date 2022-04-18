@@ -3,8 +3,8 @@
 namespace Zebooka\Gedcom\Model\Date\DateCalendar;
 
 use Fisharebest\ExtCalendar\GregorianCalendar;
-use Zebooka\Gedcom\Model\Date\DateCalendarInterface;
-use Zebooka\Gedcom\Model\DateInterface;
+use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 
 class DateGregorian implements DateInterface, DateCalendarInterface
 {

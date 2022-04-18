@@ -1,11 +1,10 @@
 <?php
 
-namespace Zebooka\Gedcom\Model\Date\DateCalendar;
+namespace Zebooka\Gedcom\Model\Date;
 
-use Zebooka\Gedcom\Model\Date\DateCalendarInterface;
-use Zebooka\Gedcom\Model\DateInterface;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 
-class DateEmpty implements DateInterface, DateCalendarInterface
+class DateEmpty implements DateInterface
 {
     const REGEXP = '/^\s*$/';
 
@@ -23,16 +22,6 @@ class DateEmpty implements DateInterface, DateCalendarInterface
     }
 
     public function __toString(): string
-    {
-        return '';
-    }
-
-    public function toTimestamp(): ?int
-    {
-        return null;
-    }
-
-    public function year(): string
     {
         return '';
     }

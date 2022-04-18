@@ -5,7 +5,7 @@ namespace Test\Zebooka\Gedcom\Model\Date;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Model\Date\DateCalendar;
-use Zebooka\Gedcom\Model\Date\DateCalendarInterface;
+use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 use Zebooka\Gedcom\Model\Date\DatePeriod;
 
 class DatePeriodTest extends TestCase

@@ -1,6 +1,6 @@
 <?php
 
-namespace Zebooka\Gedcom\Model;
+namespace Zebooka\Gedcom\Model\Date;
 
 interface DateInterface
 {
