@@ -53,13 +53,17 @@ class Parser
         }
         // TODO add encoding and namespace
         $gedcom = explode("\n", str_replace("\r", "\n", $gedcom));
-        $xml = sprintf('<?xml version="1.0" encoding="%s"?>', $encoding) . PHP_EOL
+        $xmlHead = sprintf('<?xml version="1.0" encoding="%s"?>', $encoding) . PHP_EOL
             . sprintf('<GEDCOM xmlns="%s">', htmlspecialchars(Document::XML_NAMESPACE));
         $stack = [];
+        $xml = '';
         foreach ($gedcom as $line) {
             $xml .= self::createElementFromLine($line, $stack);
         }
+        if (!$xml) {
+            throw new \UnexpectedValueException('Empty GEDCOM file.');
+        }
         $xml .= self::closeTags($stack) . '</GEDCOM>';
-        return $xml;
+        return $xmlHead . $xml;
     }
 }

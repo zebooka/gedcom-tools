@@ -12,7 +12,7 @@ class ConsoleApplicationFactory
     {
         $a = new Application(
             basename($_SERVER['argv'][0]),
-            (defined('VERSION') ? constant('VERSION') : '0.0.0') . (defined('BUILD_TIMSTAMP') ? ' (' . date('Y-m-d H:i:s', constant('BUILD_TIMSTAMP')) . ')' : '')
+            (defined('VERSION') ? constant('VERSION') : '0.0.0-dev') . (defined('BUILD_TIMSTAMP') ? ' (' . date('Y-m-d H:i:s', constant('BUILD_TIMSTAMP')) . ')' : '')
         );
         $a->add(new LeafsCommand());
         $a->add(new IdsRenameCommand());

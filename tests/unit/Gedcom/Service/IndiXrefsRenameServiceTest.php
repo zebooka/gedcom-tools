@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Document;
 use Zebooka\Gedcom\Service\IndiXrefsRenameService;
 use Zebooka\Gedcom\Service\TransliteratorService;
+use Zebooka\Gedcom\Service\UpdateModifiedService;
 
 class IndiXrefsRenameServiceTest extends TestCase
 {
@@ -14,10 +15,15 @@ class IndiXrefsRenameServiceTest extends TestCase
         return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom.ged'));
     }
 
+    private function service()
+    {
+        return new IndiXrefsRenameService(new TransliteratorService(), new UpdateModifiedService());
+    }
+
     public function test_isComposedXref()
     {
         $gedcom = $this->gedcom();
-        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service = $this->service();
 
         $this->assertTrue($service->isComposedXref('I1980FAMILYFATHER', $gedcom));
         $this->assertTrue($service->isComposedXref('I1980FAMILYLOOOOON99', $gedcom));
@@ -37,7 +43,7 @@ class IndiXrefsRenameServiceTest extends TestCase
         $gedcom = $this->gedcom();
         $gedcom->xpath('/G:GEDCOM/G:HEAD/G:GEDC/G:VERS')->item(0)->setAttribute('value', '7.0.0');
         $this->assertTrue($gedcom->isVersion7x());
-        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service = $this->service();
 
         $this->assertTrue($service->isComposedXref('I1980FAMILYTOOLOOOOOOOOOOOOONG', $gedcom));
     }
@@ -46,23 +52,23 @@ class IndiXrefsRenameServiceTest extends TestCase
     {
         $gedcom = $this->gedcom();
         $this->expectExceptionObject(new \UnexpectedValueException('Unexpected empty XREF value.'));
-        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service = $this->service();
         $this->assertFalse($service->isComposedXref('', $gedcom));
     }
 
     public function test_isXrefAvailable()
     {
-        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service = $this->service();
         $gedcom = $this->gedcom();
         $this->assertFalse($service->isXrefAvailable('SON', [], $gedcom));
         $this->assertTrue($service->isXrefAvailable('SON', ['SON' => 'I2000FAMILYSONNAME'], $gedcom)); // xref is available again, once it was set to be renamed.
         $this->assertTrue($service->isXrefAvailable('RANDOM', [], $gedcom));
-        $this->assertFalse($service->isXrefAvailable('RANDOM', ['SOME'=> 'RANDOM'], $gedcom));
+        $this->assertFalse($service->isXrefAvailable('RANDOM', ['SOME' => 'RANDOM'], $gedcom));
     }
 
     public function test_collectXrefsToRename()
     {
-        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service = $this->service();
         $renameMap = $service->collectXrefsToRename($this->gedcom());
         $this->assertIsArray($renameMap);
         $this->assertCount(8, $renameMap);
@@ -78,7 +84,7 @@ class IndiXrefsRenameServiceTest extends TestCase
 
     public function test_increaseXrefSeqence()
     {
-        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service = $this->service();
         $this->assertEquals('I1234TEST4', $service->increaseXrefSequence('I1234TEST3'));
         $this->assertEquals('I8888VERYVERYVERYLO3', $service->increaseXrefSequence('I8888VERYVERYVERYLONGIDENTIFIER2'));
         $this->assertEquals('I8888VERYVERYVERYLO2', $service->increaseXrefSequence('I8888VERYVERYVERYLONGIDENTIFIER'));
@@ -87,15 +93,20 @@ class IndiXrefsRenameServiceTest extends TestCase
     public function test_increaseXrefSeqence_fails_on_incorrect_xref()
     {
         $this->expectExceptionObject(new \UnexpectedValueException("XREF 'TEST' does not match regular expression."));
-        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service = $this->service();
         $service->increaseXrefSequence('TEST');
     }
 
     public function test_renameXrefs()
     {
         $gedcom = $this->gedcom();
-        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service = $this->service();
         $service->renameXrefs($gedcom);
+        foreach ($gedcom->xpath('/G:GEDCOM/G:HEAD/G:SOUR | /G:GEDCOM/*/G:CHAN') as $node)
+        {
+            /** @var \DOMElement $node */
+            $node->remove();
+        }
         $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_indi.ged'), "{$gedcom}");
     }
 }

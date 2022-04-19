@@ -11,26 +11,42 @@ abstract class XrefsRenameServiceAbstract
 
     /** @var TransliteratorService */
     protected $transliterateService;
+    /** @var UpdateModifiedService */
+    protected $updateModifiedService;
 
-    public function __construct(TransliteratorService $transliterateService)
+    public function __construct(TransliteratorService $transliterateService, UpdateModifiedService $updateModifiedService)
     {
         $this->transliterateService = $transliterateService;
+        $this->updateModifiedService = $updateModifiedService;
     }
 
     public function renameXrefs(Document $gedcom, $renameMap = [])
     {
         $renameMap = $this->collectXrefsToRename($gedcom, $renameMap);
+        $nodesUpdated = false;
         foreach ($renameMap as $from => $to) {
             $nodes = $gedcom->xpath("//*[@xref='{$from}'] | //*[@pointer='{$from}']");
             foreach ($nodes as $node) {
                 /** @var \DOMElement $node */
+                $nodeUpdated = false;
                 if ($node->getAttribute('xref') === $from) {
                     $node->setAttribute('xref', $to);
+                    $nodeUpdated = $nodesUpdated = true;
                 }
                 if ($node->getAttribute('pointer') === $from) {
                     $node->setAttribute('pointer', $to);
+                    $nodeUpdated = $nodesUpdated = true;
+                }
+                if ($nodeUpdated) {
+                    while (!$node->hasAttribute('xref')) {
+                        $node = $node->parentNode;
+                    }
+                    $this->updateModifiedService->updateNodeModificationDate($gedcom, $node);
                 }
             }
+        }
+        if ($nodesUpdated) {
+            $this->updateModifiedService->updateGedcomModificationDate($gedcom);
         }
         return $renameMap;
     }

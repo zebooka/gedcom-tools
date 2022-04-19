@@ -64,4 +64,10 @@ XML;
 
         $this->assertXmlStringEqualsXmlString($xml, Parser::parseString($string));
     }
+
+    public function test_parseString_fails_on_empty()
+    {
+        $this->expectExceptionObject(new \UnexpectedValueException('Empty GEDCOM file.'));
+        Parser::parseString(' ');
+    }
 }

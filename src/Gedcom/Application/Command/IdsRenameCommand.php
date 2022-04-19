@@ -6,9 +6,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Zebooka\Gedcom\Controller\IdsRenameController;
 use Zebooka\Gedcom\Service\FamXrefsRenameService;
 use Zebooka\Gedcom\Service\IndiXrefsRenameService;
+use Zebooka\Gedcom\Service\UpdateModifiedService;
 use Zebooka\Gedcom\Service\TransliteratorService;
 
 class IdsRenameCommand extends AbstractCommand
@@ -35,14 +35,17 @@ class IdsRenameCommand extends AbstractCommand
         $err->writeln("--> Making IDs fancy", OutputInterface::VERBOSITY_VERBOSE);
 
         $renameMap = [];
-        $transliteratorService = new TransliteratorService();
-        foreach ([new IndiXrefsRenameService($transliteratorService), new FamXrefsRenameService($transliteratorService)] as $service) {
+        $t = new TransliteratorService();
+        $u = new UpdateModifiedService();
+        foreach ([new IndiXrefsRenameService($t, $u), new FamXrefsRenameService($t, $u)] as $service) {
             $renameMap = $input->getOption(self::OPTION_DRY_RUN) ? $service->collectXrefsToRename($gedcom, $renameMap) : $service->renameXrefs($gedcom, $renameMap);
         }
 
         if ($output->isQuiet()) {
-            foreach ($renameMap as $from => $to) {
-                $output->writeln("{$from}\t{$to}", OutputInterface::VERBOSITY_QUIET);
+            if ('-' !== $input->getArgument(self::ARGUMENT_GEDCOM)) {
+                foreach ($renameMap as $from => $to) {
+                    $output->writeln("{$from}\t{$to}", OutputInterface::VERBOSITY_QUIET);
+                }
             }
         } else {
             foreach ($renameMap as $from => $to) {

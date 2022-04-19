@@ -70,7 +70,7 @@ $stub =
     '#!/usr/bin/env php' . PHP_EOL .
     '<?php ' .
     (isset($_ENV['PHAR_SKELETON_NAMESPACE']) ? 'namespace ' . $_ENV['PHAR_SKELETON_NAMESPACE'] . '; ' : '') .
-    'define(\'VERSION\', \'' . (exec('git describe --tags --candidates=0 2>/dev/null || git describe --all') ?: '?') . '\'); ' .
+    'define(\'VERSION\', \'' . (exec('git describe --tags --candidates=0 2>/dev/null || git describe --all') ?: '0.0.0-dev') . '\'); ' .
     'define(\'BUILD_TIMSTAMP\', ' . time() . '); ' .
     'set_include_path(\'phar://' . $alias . '\' . PATH_SEPARATOR . get_include_path()); ' .
     'include \'phar://' . $alias . '/src/main.php\'; ' .

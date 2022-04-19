@@ -25,7 +25,7 @@ abstract class AbstractCommand extends Command
         $err = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
 
         $filename = $input->getArgument(self::ARGUMENT_GEDCOM);
-        if (0 === ftell(STDIN)) {
+        if ('-' === $filename) {
             $err->writeln("--> Reading from STDIN...", OutputInterface::VERBOSITY_VERBOSE);
             $contents = '';
             while (!feof(STDIN)) {
