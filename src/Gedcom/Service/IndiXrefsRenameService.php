@@ -66,7 +66,7 @@ class IndiXrefsRenameService
             return false;
         }
         Document::validateXref($xref);
-        return !$gedcom->xpath("//*[@xref='{$xref}']")->count();
+        return !$gedcom->xpath("//*[@xref='{$xref}']")->count() || array_key_exists($xref, $heap);
     }
 
     public function composeNodeXref(\DOMElement $indiNode, Document $gedcom): string

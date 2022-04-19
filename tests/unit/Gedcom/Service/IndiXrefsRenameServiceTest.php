@@ -9,6 +9,11 @@ use Zebooka\Gedcom\Service\TransliteratorService;
 
 class IndiXrefsRenameServiceTest extends TestCase
 {
+    private function gedcom()
+    {
+        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom.ged'));
+    }
+
     public function test_isComposedXref()
     {
         $service = new IndiXrefsRenameService(new TransliteratorService());
@@ -31,18 +36,14 @@ class IndiXrefsRenameServiceTest extends TestCase
         $this->assertFalse($service->isComposedXref(''));
     }
 
-    private function gedcom()
-    {
-        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom.ged'));
-    }
-
     public function test_isXrefAvailable()
     {
         $service = new IndiXrefsRenameService(new TransliteratorService());
         $gedcom = $this->gedcom();
         $this->assertFalse($service->isXrefAvailable('SON', [], $gedcom));
+        $this->assertTrue($service->isXrefAvailable('SON', ['SON' => 'I2000FAMILYSON'], $gedcom)); // xref is available again, once it was set to be renamed.
         $this->assertTrue($service->isXrefAvailable('RANDOM', [], $gedcom));
-        $this->assertFalse($service->isXrefAvailable('RANDOM', ['RANDOM'], $gedcom));
+        $this->assertFalse($service->isXrefAvailable('RANDOM', ['SOME'=> 'RANDOM'], $gedcom));
     }
 
     public function test_collectXrefsToRename()
