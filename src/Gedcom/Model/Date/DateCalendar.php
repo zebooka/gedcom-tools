@@ -6,7 +6,6 @@ use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateGregorian;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateHebrew;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateJulian;
-use Zebooka\Gedcom\Model\Date\DateEmpty;
 
 class DateCalendar
 {

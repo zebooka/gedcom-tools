@@ -7,12 +7,12 @@ trait VersionTrait
     use DocumentTrait;
 
     /**
-     * Get document version from HEAD.SOUR.VERS tag
+     * Get document version from HEAD.GEDC.VERS tag
      * @return string|null
      */
     public function version()
     {
-        return $this->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/G:VERS/@value)');
+        return $this->xpath('string(/G:GEDCOM/G:HEAD/G:GEDC/G:VERS/@value)');
     }
 
     /**

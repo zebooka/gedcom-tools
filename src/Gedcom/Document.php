@@ -3,6 +3,7 @@
 namespace Zebooka\Gedcom;
 
 use Zebooka\Gedcom\Document\EscapeTrait;
+use Zebooka\Gedcom\Document\FamTrait;
 use Zebooka\Gedcom\Document\HeadTrait;
 use Zebooka\Gedcom\Document\IndiTrait;
 use Zebooka\Gedcom\Document\VersionTrait;
@@ -12,6 +13,7 @@ class Document
     use EscapeTrait,
         HeadTrait,
         IndiTrait,
+        FamTrait,
         VersionTrait;
 
     const XML_NAMESPACE = 'https://zebooka.com/gedcom/';

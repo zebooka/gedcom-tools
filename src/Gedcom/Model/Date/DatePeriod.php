@@ -3,9 +3,8 @@
 namespace Zebooka\Gedcom\Model\Date;
 
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
-use Zebooka\Gedcom\Model\Date\DateInterface;
 
-class DatePeriod implements DateInterface
+class DatePeriod implements DateInterface, YearInterface
 {
     const REGEXP = '/^(?:FROM\s+(?<from>.+?))?(^|\s+|$)(?:TO\s+(?<to>.+))?$/';
 
@@ -38,5 +37,10 @@ class DatePeriod implements DateInterface
         return ($this->from ? "FROM {$this->from}" : '')
             . ($this->from && $this->to ? ' ' : '')
             . ($this->to ? "TO {$this->to}" : '');
+    }
+
+    public function year(): ?int
+    {
+        return ($this->from instanceof YearInterface ? $this->from->year() : ($this->to instanceof YearInterface ? $this->to->year() : null));
     }
 }

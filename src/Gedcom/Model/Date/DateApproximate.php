@@ -3,9 +3,8 @@
 namespace Zebooka\Gedcom\Model\Date;
 
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
-use Zebooka\Gedcom\Model\Date\DateInterface;
 
-class DateApproximate implements DateInterface
+class DateApproximate implements DateInterface, YearInterface
 {
     const ABOUT = 'ABT';
     const CALCULATED = 'CAL';
@@ -39,5 +38,10 @@ class DateApproximate implements DateInterface
     public function __toString(): string
     {
         return "{$this->approx} {$this->date}";
+    }
+
+    public function year(): ?int
+    {
+        return ($this->date instanceof YearInterface ? $this->date->year() : null);
     }
 }

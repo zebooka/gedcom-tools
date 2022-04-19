@@ -16,24 +16,38 @@ class IndiXrefsRenameServiceTest extends TestCase
 
     public function test_isComposedXref()
     {
+        $gedcom = $this->gedcom();
         $service = new IndiXrefsRenameService(new TransliteratorService());
 
-        $this->assertTrue($service->isComposedXref('I1980FAMILYFATHER'));
-        $this->assertTrue($service->isComposedXref('I1980FAMILYLOOOOON99'));
-        $this->assertTrue($service->isComposedXref('I1980FAMILYSHORT1'));
+        $this->assertTrue($service->isComposedXref('I1980FAMILYFATHER', $gedcom));
+        $this->assertTrue($service->isComposedXref('I1980FAMILYLOOOOON99', $gedcom));
+        $this->assertTrue($service->isComposedXref('I1980FAMILYSHORT1', $gedcom));
+        $this->assertTrue($service->isComposedXref('A1980FAMILYSHORT1', $gedcom));
 
-        $this->assertFalse($service->isComposedXref('I1980FAMILYTOOLOOOOOOOOOOOOONG'));
-        $this->assertFalse($service->isComposedXref('I__FAMILYUNCLE'));
-        $this->assertFalse($service->isComposedXref('I00001'));
-        $this->assertFalse($service->isComposedXref('TEST'));
-        $this->assertFalse($service->isComposedXref('F1234AAABBB'));
+        $this->assertFalse($service->isComposedXref('J1980FAMILYSHORT1', $gedcom));
+        $this->assertFalse($service->isComposedXref('I1980FAMILYTOOLOOOOOOOOOOOOONG', $gedcom));
+        $this->assertFalse($service->isComposedXref('I__FAMILYUNCLE', $gedcom));
+        $this->assertFalse($service->isComposedXref('I00001', $gedcom));
+        $this->assertFalse($service->isComposedXref('TEST', $gedcom));
+        $this->assertFalse($service->isComposedXref('F1234AAABBB', $gedcom));
+    }
+
+    public function test_isComposedXref_long_gedcom_7x()
+    {
+        $gedcom = $this->gedcom();
+        $gedcom->xpath('/G:GEDCOM/G:HEAD/G:GEDC/G:VERS')->item(0)->setAttribute('value', '7.0.0');
+        $this->assertTrue($gedcom->isVersion7x());
+        $service = new IndiXrefsRenameService(new TransliteratorService());
+
+        $this->assertTrue($service->isComposedXref('I1980FAMILYTOOLOOOOOOOOOOOOONG', $gedcom));
     }
 
     public function test_isComposedXref_empty_throws_exception()
     {
+        $gedcom = $this->gedcom();
         $this->expectExceptionObject(new \UnexpectedValueException('Unexpected empty XREF value.'));
         $service = new IndiXrefsRenameService(new TransliteratorService());
-        $this->assertFalse($service->isComposedXref(''));
+        $this->assertFalse($service->isComposedXref('', $gedcom));
     }
 
     public function test_isXrefAvailable()
@@ -41,7 +55,7 @@ class IndiXrefsRenameServiceTest extends TestCase
         $service = new IndiXrefsRenameService(new TransliteratorService());
         $gedcom = $this->gedcom();
         $this->assertFalse($service->isXrefAvailable('SON', [], $gedcom));
-        $this->assertTrue($service->isXrefAvailable('SON', ['SON' => 'I2000FAMILYSON'], $gedcom)); // xref is available again, once it was set to be renamed.
+        $this->assertTrue($service->isXrefAvailable('SON', ['SON' => 'I2000FAMILYSONNAME'], $gedcom)); // xref is available again, once it was set to be renamed.
         $this->assertTrue($service->isXrefAvailable('RANDOM', [], $gedcom));
         $this->assertFalse($service->isXrefAvailable('RANDOM', ['SOME'=> 'RANDOM'], $gedcom));
     }
@@ -52,14 +66,14 @@ class IndiXrefsRenameServiceTest extends TestCase
         $renameMap = $service->collectXrefsToRename($this->gedcom());
         $this->assertIsArray($renameMap);
         $this->assertCount(8, $renameMap);
-        $this->assertEquals('I2000FAMILYSON', $renameMap['SON']);
-        $this->assertEquals('I2005FAMILYDAUGHTER', $renameMap['DAUGHTER']);
-        $this->assertEquals('I1975FAMILYFATHER', $renameMap['FATHER']);
+        $this->assertEquals('I2000FAMILYSONNAME', $renameMap['SON']);
+        $this->assertEquals('I2005FAMILYDAUGHTERN', $renameMap['DAUGHTER']);
+        $this->assertEquals('I1975FAMILYFATHERDAD', $renameMap['FATHER']);
         $this->assertEquals('I1980FAMILYMOTHER', $renameMap['MOTHER']);
-        $this->assertEquals('I1950FAMILYGRAND', $renameMap['GRANDFATHER']);
+        $this->assertEquals('I1950FAMILYGRANDPA', $renameMap['GRANDFATHER']);
         $this->assertEquals('I1948FAMILYGRANNY', $renameMap['GRANDMOTHER']);
-        $this->assertEquals('I2020FAMILYGRAND', $renameMap['GRANDDAUGHTER']);
-        $this->assertEquals('I____FAMILYUNCLE', $renameMap['UNCLE']);
+        $this->assertEquals('I2020FAMILYGRANDDAUG', $renameMap['GRANDDAUGHTER']);
+        $this->assertEquals('A____FAMILYUNCLE', $renameMap['UNCLE']);
     }
 
     public function test_increaseXrefSeqence()
@@ -75,5 +89,13 @@ class IndiXrefsRenameServiceTest extends TestCase
         $this->expectExceptionObject(new \UnexpectedValueException("XREF 'TEST' does not match regular expression."));
         $service = new IndiXrefsRenameService(new TransliteratorService());
         $service->increaseXrefSequence('TEST');
+    }
+
+    public function test_renameXrefs()
+    {
+        $gedcom = $this->gedcom();
+        $service = new IndiXrefsRenameService(new TransliteratorService());
+        $service->renameXrefs($gedcom);
+        $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_indi.ged'), "{$gedcom}");
     }
 }

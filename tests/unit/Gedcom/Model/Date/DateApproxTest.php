@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Model\Date\DateApproximate;
 use Zebooka\Gedcom\Model\Date\DateCalendar;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
+use Zebooka\Gedcom\Model\Date\YearInterface;
 
 class DateApproxTest extends TestCase
 {
@@ -17,9 +18,12 @@ class DateApproxTest extends TestCase
      */
     private function dateExactMock()
     {
-        return \Mockery::mock(DateCalendarInterface::class)
+        return \Mockery::mock(DateCalendarInterface::class, YearInterface::class)
             ->shouldReceive('__toString')
             ->andReturn('DATE_EXACT')
+            ->getMock()
+            ->shouldReceive('year')
+            ->andReturn('123')
             ->getMock();
     }
 
@@ -28,6 +32,13 @@ class DateApproxTest extends TestCase
         $this->assertEquals('ABT DATE_EXACT', (string)(new DateApproximate('ABT', $this->dateExactMock())));
         $this->assertEquals('CAL DATE_EXACT', (string)(new DateApproximate('CAL', $this->dateExactMock())));
         $this->assertEquals('EST DATE_EXACT', (string)(new DateApproximate('EST', $this->dateExactMock())));
+    }
+
+    public function test_DateApprox_year()
+    {
+        $this->assertEquals(123, (new DateApproximate('ABT', $this->dateExactMock()))->year());
+        $this->assertEquals(123, (new DateApproximate('CAL', $this->dateExactMock()))->year());
+        $this->assertEquals(123, (new DateApproximate('EST', $this->dateExactMock()))->year());
     }
 
     public function test_DateApprox_unknown_Lax_throws_exception()

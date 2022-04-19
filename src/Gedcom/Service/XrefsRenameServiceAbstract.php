@@ -1,0 +1,92 @@
+<?php
+
+namespace Zebooka\Gedcom\Service;
+
+use Zebooka\Gedcom\Document;
+
+abstract class XrefsRenameServiceAbstract
+{
+    const LENGTH_LIMIT_55X = 20;
+    const REGEXP = '/^(?<prefix>[A-Z])(?<year>\d+|____)(?<name>[A-Z]+)(?<sequence>\d+)?/';
+
+    /** @var TransliteratorService */
+    protected $transliterateService;
+
+    public function __construct(TransliteratorService $transliterateService)
+    {
+        $this->transliterateService = $transliterateService;
+    }
+
+    public function renameXrefs(Document $gedcom, $renameMap = [])
+    {
+        $renameMap = $this->collectXrefsToRename($gedcom, $renameMap);
+        foreach ($renameMap as $from => $to) {
+            $nodes = $gedcom->xpath("//*[@xref='{$from}'] | //*[@pointer='{$from}']");
+            foreach ($nodes as $node) {
+                /** @var \DOMElement $node */
+                if ($node->getAttribute('xref') === $from) {
+                    $node->setAttribute('xref', $to);
+                }
+                if ($node->getAttribute('pointer') === $from) {
+                    $node->setAttribute('pointer', $to);
+                }
+            }
+        }
+        return $renameMap;
+    }
+
+    abstract protected function getNodes(Document $gedcom): \DOMNodeList;
+
+    public function collectXrefsToRename(Document $gedcom, $heap = [])
+    {
+        foreach ($this->getNodes($gedcom) as $node) {
+            /** @var \DOMElement $node */
+            if ($this->isComposedXref($node->getAttribute('xref'), $gedcom)) {
+                continue;
+            }
+            if ('' === ($newXref = $this->composeNodeXref($node, $gedcom))) {
+                continue;
+            }
+            while (!$this->isXrefAvailable($newXref, $heap, $gedcom)) {
+                $newXref = $this->increaseXrefSequence($newXref);
+            }
+            if ($node->getAttribute('xref') === $newXref) {
+                continue;
+            }
+            $heap[$node->getAttribute('xref')] = $newXref;
+        }
+        return $heap;
+    }
+
+    public function isComposedXref(string $xref, Document $gedcom): bool
+    {
+        if (strlen($xref) === 0) {
+            throw new \UnexpectedValueException('Unexpected empty XREF value.');
+        }
+        return preg_match(static::REGEXP, $xref) && ($gedcom->isVersion55x() ? strlen($xref) <= static::LENGTH_LIMIT_55X : true);
+    }
+
+    public function isXrefAvailable(string $xref, array $heap, Document $gedcom): bool
+    {
+        if (in_array($xref, $heap)) {
+            return false;
+        }
+        Document::validateXref($xref);
+        return !$gedcom->xpath("//*[@xref='{$xref}']")->count() || array_key_exists($xref, $heap);
+    }
+
+    abstract public function composeNodeXref(\DOMElement $node, Document $gedcom): string;
+
+    public function increaseXrefSequence(string $xref)
+    {
+        Document::validateXref($xref);
+        if (!preg_match(static::REGEXP, $xref, $m)) {
+            throw new \UnexpectedValueException("XREF '$xref' does not match regular expression.");
+        }
+        $sequence = (!empty($m['sequence']) ? $m['sequence'] + 1 : 2);
+        $prefix = $m['prefix'] . $m['year'] . $m['name'];
+        return (strlen($prefix . $sequence) > static::LENGTH_LIMIT_55X
+            ? substr($prefix, 0, static::LENGTH_LIMIT_55X - strlen($sequence)) . $sequence
+            : $prefix . $sequence);
+    }
+}

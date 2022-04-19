@@ -2,7 +2,6 @@
 
 namespace Zebooka\Gedcom\Model\Date\DateCalendar;
 
-use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 use Zebooka\Gedcom\Model\Date\DateInterface;
 
 class DateFrenchR implements DateInterface, DateCalendarInterface
@@ -29,10 +28,5 @@ class DateFrenchR implements DateInterface, DateCalendarInterface
     public function toTimestamp(): ?int
     {
         throw new \RuntimeException('Not implemented yet.');
-    }
-
-    public function year(): string
-    {
-        return 'F';
     }
 }

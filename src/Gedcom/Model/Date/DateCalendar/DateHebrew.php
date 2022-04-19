@@ -2,10 +2,10 @@
 
 namespace Zebooka\Gedcom\Model\Date\DateCalendar;
 
-use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 use Zebooka\Gedcom\Model\Date\DateInterface;
+use Zebooka\Gedcom\Model\Date\YearInterface;
 
-class DateHebrew implements DateInterface, DateCalendarInterface
+class DateHebrew implements DateInterface, DateCalendarInterface, YearInterface
 {
     const CALENDAR_5 = '@#DHEBREW@';
     const CALENDAR_7 = 'HEBREW';
@@ -74,7 +74,7 @@ class DateHebrew implements DateInterface, DateCalendarInterface
         throw new \RuntimeException('Not implemented yet.');
     }
 
-    public function year(): string
+    public function year(): int
     {
         return $this->year;
     }

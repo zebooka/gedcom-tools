@@ -3,9 +3,8 @@
 namespace Zebooka\Gedcom\Model\Date;
 
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
-use Zebooka\Gedcom\Model\Date\DateInterface;
 
-class DateRange implements DateInterface
+class DateRange implements DateInterface, YearInterface
 {
     const REGEXP = '/^(?:(BET\s+(?<between>.+)\s+AND\s+(?<and>.+))|(BEF\s+(?<before>.+))|(AFT\s+(?<after>.+)))?$/';
 
@@ -51,5 +50,10 @@ class DateRange implements DateInterface
         } else {
             throw new \RuntimeException('Unexpected situation. Both dates for DateRange are empty.');
         }
+    }
+
+    public function year(): ?int
+    {
+        return ($this->after instanceof YearInterface ? $this->after->year() : ($this->before instanceof YearInterface ? $this->before->year() : null));
     }
 }

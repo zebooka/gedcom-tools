@@ -3,6 +3,7 @@
 namespace Zebooka\Gedcom\Application;
 
 use Symfony\Component\Console\Application;
+use Zebooka\Gedcom\Application\Command\IdsRenameCommand;
 use Zebooka\Gedcom\Application\Command\LeafsCommand;
 
 class ConsoleApplicationFactory
@@ -14,6 +15,7 @@ class ConsoleApplicationFactory
             (defined('VERSION') ? constant('VERSION') : '0.0.0') . (defined('BUILD_TIMSTAMP') ? ' (' . date('Y-m-d H:i:s', constant('BUILD_TIMSTAMP')) . ')' : '')
         );
         $a->add(new LeafsCommand());
+        $a->add(new IdsRenameCommand());
         return $a;
     }
 }

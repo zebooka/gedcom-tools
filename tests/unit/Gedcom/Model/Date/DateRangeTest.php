@@ -39,18 +39,20 @@ class DateRangeTest extends TestCase
     public function fromStringProvider()
     {
         return [
-            ['AFT 1922'],
-            ['BEF 1991'],
-            ['BET 1922 AND 1991'],
+            ['AFT 1922', 1922],
+            ['BEF 1991', 1991],
+            ['BET 1922 AND 1991', 1922],
         ];
     }
 
     /**
      * @dataProvider fromStringProvider
      */
-    public function test_DateRange_fromString($value)
+    public function test_DateRange_fromString($value, $year)
     {
-        $this->assertEquals($value, (string)DateRange::fromString($value));
+        $date = DateRange::fromString($value);
+        $this->assertEquals($value, (string)$date);
+        $this->assertEquals($year, $date->year());
         $this->assertMatchesRegularExpression(DateRange::REGEXP, $value);
     }
 

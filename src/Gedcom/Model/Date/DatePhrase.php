@@ -2,8 +2,6 @@
 
 namespace Zebooka\Gedcom\Model\Date;
 
-use Zebooka\Gedcom\Model\Date\DateInterface;
-
 class DatePhrase implements DateInterface
 {
     const REGEXP = '/^\\((?<phrase>.*)\\)$/';

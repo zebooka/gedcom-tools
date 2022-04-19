@@ -4,7 +4,7 @@ namespace Zebooka\Gedcom\Model\Date;
 
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 
-class DateInt implements DateCalendarInterface
+class DateInt implements DateCalendarInterface, YearInterface
 {
     const REGEXP = '/^INT\\s+(?<int>.+)\s+(?<phrase>\\(.+\\))$/';
 
@@ -39,8 +39,8 @@ class DateInt implements DateCalendarInterface
         return $this->interpretered->toTimestamp();
     }
 
-    public function year(): string
+    public function year(): ?int
     {
-        return $this->interpretered->year();
+        return ($this->interpretered instanceof YearInterface ? $this->interpretered->year() : null);
     }
 }

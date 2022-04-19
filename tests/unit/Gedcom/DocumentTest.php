@@ -12,7 +12,7 @@ class DocumentTest extends TestCase
     {
         $string = <<<GEDCOM
 0 HEAD
-1 SOUR TEST
+1 GEDC
 2 VERS 1.2.3
 1 DATE @#DJULIAN@ 27 JAN 2019
 1 SUBM @SUBMITTER1@

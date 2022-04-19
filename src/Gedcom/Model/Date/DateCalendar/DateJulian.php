@@ -3,10 +3,10 @@
 namespace Zebooka\Gedcom\Model\Date\DateCalendar;
 
 use Fisharebest\ExtCalendar\JulianCalendar;
-use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 use Zebooka\Gedcom\Model\Date\DateInterface;
+use Zebooka\Gedcom\Model\Date\YearInterface;
 
-class DateJulian implements DateInterface, DateCalendarInterface
+class DateJulian implements DateInterface, DateCalendarInterface, YearInterface
 {
     const CALENDAR_5 = '@#DJULIAN@';
     const CALENDAR_7 = 'JULIAN';
@@ -99,7 +99,7 @@ class DateJulian implements DateInterface, DateCalendarInterface
         return ($julianDay - 2440588) * 86400;
     }
 
-    public function year(): string
+    public function year(): int
     {
         return $this->year;
     }
