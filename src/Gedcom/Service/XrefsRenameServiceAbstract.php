@@ -38,9 +38,6 @@ abstract class XrefsRenameServiceAbstract
                     $nodeUpdated = $nodesUpdated = true;
                 }
                 if ($nodeUpdated) {
-                    while (!$node->hasAttribute('xref')) {
-                        $node = $node->parentNode;
-                    }
                     $this->updateModifiedService->updateNodeModificationDate($gedcom, $node);
                 }
             }

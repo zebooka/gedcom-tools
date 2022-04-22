@@ -3,10 +3,11 @@
 namespace Zebooka\Gedcom\Service;
 
 use Zebooka\Gedcom\Document;
-use Zebooka\Gedcom\Model\Date\DateCalendar\DateGregorian;
 
 class UpdateModifiedService
 {
+    use UpdateNodeValueTrait;
+
     const SOUR = 'gedcom-tools';
     const NAME = 'gedcom-tools';
     const CORP = 'Anton Bondar <zebooka@gmail.com>';
@@ -31,24 +32,16 @@ class UpdateModifiedService
         $addr = $this->updateNodeValue($gedcom, $corp, 'ADDR', self::ADDR);
     }
 
-    private function updateNodeValue(Document $gedcom, \DOMElement $parentNode, string $nodeName, ?string $value)
-    {
-        /** @var \DOMElement $node */
-        $node = $gedcom->xpath("./G:{$nodeName}", $parentNode)->item(0);
-        if (!$node) {
-            $node = $gedcom->dom()->createElementNS(Document::XML_NAMESPACE, $nodeName);
-            $parentNode->appendChild($node);
-        }
-        if (null === $value) {
-            $node->removeAttribute('value');
-        } else {
-            $node->setAttribute('value', $value);
-        }
-        return $node;
-    }
-
     public function updateNodeModificationDate(Document $gedcom, \DOMElement $node)
     {
+        while (!$node->hasAttribute('xref')) {
+            $node = $node->parentNode;
+            if ($node instanceof \DOMDocument) {
+                // no parent node with xref
+                return;
+            }
+        }
+
         $chan = $this->updateNodeValue($gedcom, $node, 'CHAN', null);
         $date = $this->updateNodeValue($gedcom, $chan, 'DATE', strtoupper(date('j M Y')));
         $time = $this->updateNodeValue($gedcom, $date, 'TIME', strtoupper(date('H:i:s')));

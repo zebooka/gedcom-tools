@@ -11,7 +11,7 @@ use Zebooka\Gedcom\Document;
 
 abstract class AbstractCommand extends Command
 {
-    const ARGUMENT_GEDCOM = 'gedcom';
+    const ARGUMENT_GEDCOM = 'filename.ged';
 
     protected function configure()
     {

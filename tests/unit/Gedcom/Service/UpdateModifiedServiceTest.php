@@ -92,4 +92,19 @@ GED;
         $this->assertNotEmpty($gedcom->xpath('string(/G:GEDCOM/G:INDI[@xref="I1"]/G:CHAN/G:DATE/@value)'));
         $this->assertNotEmpty($gedcom->xpath('string(/G:GEDCOM/G:INDI[@xref="I1"]/G:CHAN/G:DATE/G:TIME/@value)'));
     }
+
+    public function test_updateNodeModificationDate_on_node_without_xref_parent()
+    {
+        $this->expectNotToPerformAssertions();
+        $gedcomString = <<<GED
+0 HEAD
+1 SOUR test
+2 NAME TESTER
+0 TRLR
+GED;
+
+        $gedcom = Document::createFromGedcom($gedcomString);
+        $service = new UpdateModifiedService();
+        $service->updateNodeModificationDate($gedcom, $gedcom->xpath('//G:NAME')->item(0));
+    }
 }

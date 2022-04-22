@@ -4,12 +4,17 @@ namespace Zebooka\Gedcom\Service;
 
 class TransliteratorService
 {
+    const CYRILLIC = 'ru-ru_Latn/BGN; Latin; ASCII';
+
     /** @var \Transliterator */
     private $transliterator;
+    /** @var string|null */
+    private $romanizedType;
 
-    public function __construct()
+    public function __construct(string $transliteratorId = self::CYRILLIC, ?string $romanizedType = null)
     {
-        $this->transliterator = \Transliterator::create('ru-ru_Latn/BGN; Latin; ASCII; UPPER');
+        $this->transliterator = \Transliterator::create($transliteratorId);
+        $this->romanizedType = $romanizedType;
     }
 
     public function transliterate(string $string, string $regexp = '/[^A-Z0-9_]/i'): string
@@ -19,6 +24,11 @@ class TransliteratorService
 
     public function transliterateId(string $string, string $regexp = '/[^A-Z0-9_]/i'): string
     {
-        return preg_replace($regexp, '', $this->transliterate($string));
+        return strtoupper(preg_replace($regexp, '', $this->transliterate($string)));
+    }
+
+    public function romanizedType()
+    {
+        return $this->romanizedType;
     }
 }

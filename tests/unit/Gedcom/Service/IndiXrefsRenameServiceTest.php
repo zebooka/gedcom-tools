@@ -10,6 +10,8 @@ use Zebooka\Gedcom\Service\UpdateModifiedService;
 
 class IndiXrefsRenameServiceTest extends TestCase
 {
+    use FixGedcomModifiedDatesTrait;
+
     private function gedcom()
     {
         return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom.ged'));
@@ -102,11 +104,7 @@ class IndiXrefsRenameServiceTest extends TestCase
         $gedcom = $this->gedcom();
         $service = $this->service();
         $service->renameXrefs($gedcom);
-        foreach ($gedcom->xpath('/G:GEDCOM/G:HEAD/G:SOUR | /G:GEDCOM/*/G:CHAN') as $node)
-        {
-            /** @var \DOMElement $node */
-            $node->remove();
-        }
+        $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_indi.ged'), "{$gedcom}");
     }
 }
