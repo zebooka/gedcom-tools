@@ -56,7 +56,7 @@ class RomanizeService
                 } elseif ($types = $gedcom->xpath('./G:TYPE', $romn)) {
                     foreach ($types as $type) {
                         /** @var \DOMElement $type */
-                        $type->remove();
+                        $type->parentNode->removeChild($type);
                     }
                 }
                 $this->updateModifiedService->updateNodeModificationDate($gedcom, $name);

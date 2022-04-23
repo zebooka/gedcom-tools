@@ -10,7 +10,7 @@ trait FixGedcomModifiedDatesTrait
     {
         foreach ($gedcom->xpath('/G:GEDCOM/G:HEAD/G:SOUR | /G:GEDCOM/*/G:CHAN') as $node) {
             /** @var \DOMElement $node */
-            $node->remove();
+            $node->parentNode->removeChild($node);
         }
     }
 }
