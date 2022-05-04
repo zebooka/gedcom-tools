@@ -1,22 +1,22 @@
+.PHONY: all composer tests build start clean
 
-all: composer-dev test composer install
+all: composer tests build
 
 composer:
-	COMPOSER_NO_DEV=1 docker-compose -f docker-compose.composer.yml up
+	docker-compose run --rm -e COMPOSER_NO_DEV=1 -- php73 composer install -v -n -d /app
+	docker-compose run --rm -e COMPOSER_VENDOR_DIR=vendor-dev -- php73 composer install -v -n -d /app
 
-composer-dev:
-	COMPOSER_VENDOR_DIR=vendor-dev docker-compose -f docker-compose.composer.yml up
+tests:
+	docker-compose run --rm -- php73 /app/tests/run.sh
+	docker-compose run --rm -- php74 /app/tests/run.sh
+	docker-compose run --rm -- php80 /app/tests/run.sh
+	docker-compose run --rm -- php81 /app/tests/run.sh
 
-test:
-	docker-compose -f docker-compose.tests.yml up
+build:
+	docker-compose run --rm -e PHAR_SKELETON_ALIAS="gedcom-tools.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka\Gedcom\Application" -- php73 /app/build-phar.php
 
-install:
-	docker-compose -f docker-compose.build.yml up
+start:
+	docker-compose up
 
-cleanup:
-	docker-compose \
-	-f docker-compose.yml \
-	-f docker-compose.composer.yml \
-	-f docker-compose.tests.yml \
-	-f docker-compose.build.yml \
-	down --rmi local
+clean:
+	docker-compose down --rmi local
