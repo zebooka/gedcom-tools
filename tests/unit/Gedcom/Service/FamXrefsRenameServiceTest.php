@@ -31,6 +31,7 @@ class FamXrefsRenameServiceTest extends TestCase
         $this->assertTrue($service->isComposedXref('F1980FAMILYLOOOOON99', $gedcom));
         $this->assertTrue($service->isComposedXref('F1980FAMILYSHORT1', $gedcom));
 
+        $this->assertFalse($service->isComposedXref('F____', $gedcom));
         $this->assertFalse($service->isComposedXref('I1980FAMILYSHORT1', $gedcom));
         $this->assertFalse($service->isComposedXref('F1980FAMILYTOOLOOOOOOOOOOOOONG', $gedcom));
         $this->assertFalse($service->isComposedXref('F__FAMILYUNCLE', $gedcom));

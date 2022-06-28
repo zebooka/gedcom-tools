@@ -32,6 +32,8 @@ class IndiXrefsRenameServiceTest extends TestCase
         $this->assertTrue($service->isComposedXref('I1980FAMILYSHORT1', $gedcom));
         $this->assertTrue($service->isComposedXref('A1980FAMILYSHORT1', $gedcom));
 
+        $this->assertFalse($service->isComposedXref('I____', $gedcom));
+        $this->assertFalse($service->isComposedXref('A____', $gedcom));
         $this->assertFalse($service->isComposedXref('J1980FAMILYSHORT1', $gedcom));
         $this->assertFalse($service->isComposedXref('I1980FAMILYTOOLOOOOOOOOOOOOONG', $gedcom));
         $this->assertFalse($service->isComposedXref('I__FAMILYUNCLE', $gedcom));
