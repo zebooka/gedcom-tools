@@ -57,7 +57,7 @@ abstract class XrefsRenameServiceAbstract
             if ($this->isComposedXref($node->getAttribute('xref'), $gedcom)) {
                 continue;
             }
-            if ('' === ($newXref = $this->composeNodeXref($node, $gedcom))) {
+            if (null === ($newXref = $this->composeNodeXref($node, $gedcom))) {
                 continue;
             }
             while (!$this->isXrefAvailable($newXref, $heap, $gedcom)) {
@@ -88,7 +88,7 @@ abstract class XrefsRenameServiceAbstract
         return !$gedcom->xpath("//*[@xref='{$xref}']")->count() || array_key_exists($xref, $heap);
     }
 
-    abstract public function composeNodeXref(\DOMElement $node, Document $gedcom): string;
+    abstract public function composeNodeXref(\DOMElement $node, Document $gedcom): ?string;
 
     public function increaseXrefSequence(string $xref)
     {

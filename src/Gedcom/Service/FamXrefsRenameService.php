@@ -15,15 +15,20 @@ class FamXrefsRenameService extends XrefsRenameServiceAbstract
         return $gedcom->famNode();
     }
 
-    public function composeNodeXref(\DOMElement $famNode, Document $gedcom): string
+    public function composeNodeXref(\DOMElement $famNode, Document $gedcom): ?string
     {
         $husb = $gedcom->xpath('string(./G:HUSB/@pointer)', $famNode);
         $wife = $gedcom->xpath('string(./G:WIFE/@pointer)', $famNode);
         $husbSurn = ($husb ? $this->transliteratedSurname($gedcom->indiNode($husb), $gedcom) : '');
         $wifeSurn = ($wife ? $this->transliteratedSurname($gedcom->indiNode($wife), $gedcom) : '');
         $surn = ($husbSurn === $wifeSurn ? $husbSurn : $husbSurn . $wifeSurn);
+        $year = $this->marriageYear($famNode, $gedcom);
 
-        return substr($this->prefix($famNode, $gedcom) . $this->marriageYear($famNode, $gedcom) . $surn, 0, self::LENGTH_LIMIT_55X);
+        if ('' === $surn) {
+            return null;
+        }
+
+        return substr($this->prefix($famNode, $gedcom) . ($year ?? '____') . $surn, 0, self::LENGTH_LIMIT_55X);
     }
 
     public function prefix(\DOMElement $indiNode, Document $gedcom)
@@ -31,13 +36,13 @@ class FamXrefsRenameService extends XrefsRenameServiceAbstract
         return 'F';
     }
 
-    public function marriageYear(\DOMElement $famNode, Document $gedcom)
+    public function marriageYear(\DOMElement $famNode, Document $gedcom): ?int
     {
         $marriageDate = DateFactory::fromString($gedcom->xpath('string(./G:MARR/G:DATE/@value)', $famNode));
         if ($marriageDate instanceof YearInterface) {
             return $marriageDate->year();
         } else {
-            return '____';
+            return null;
         }
     }
 

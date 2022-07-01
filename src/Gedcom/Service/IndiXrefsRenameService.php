@@ -16,10 +16,10 @@ class IndiXrefsRenameService extends XrefsRenameServiceAbstract
         return $gedcom->indiNode();
     }
 
-    public function composeNodeXref(\DOMElement $famNode, Document $gedcom): string
+    public function composeNodeXref(\DOMElement $famNode, Document $gedcom): ?string
     {
         if ('' === ($name = $this->transliteratedName($famNode, $gedcom))) {
-            return '';
+            return null;
         }
         return substr($this->prefix($famNode, $gedcom) . $this->birthYear($famNode, $gedcom) . $name, 0, self::LENGTH_LIMIT_55X);
     }

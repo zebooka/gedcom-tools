@@ -38,7 +38,7 @@ class LeafsServiceTest extends TestCase
         $service = new LeafsService();
         $indiRankings = $service->gedcomToIndiRankings($g = $this->gedcom());
         $this->assertIsArray($indiRankings);
-        $this->assertCount(8, $indiRankings);
+        $this->assertCount(9, $indiRankings);
         $this->assertContainsOnlyInstancesOf(IndiRanking::class, $indiRankings);
         $this->assertEquals($eq, $indiRankings[$a]->ranking() <=> $indiRankings[$b]->ranking());
     }
