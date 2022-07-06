@@ -3,13 +3,15 @@
 namespace Test\Zebooka\Gedcom;
 
 use PHPUnit\Framework\TestCase;
+use Zebooka\Gedcom\Document;
 use Zebooka\Gedcom\Formatter;
 
 class FormatterTest extends TestCase
 {
-    private function gedcom()
+    private function gedcom($bom = true)
     {
-        return <<<GEDCOM
+        return ($bom ? "\xEF\xBB\xBF" : '') .
+            <<<GEDCOM
 0 HEAD
 1 SOUR TEST
 2 VERS 5.5.1
@@ -22,11 +24,12 @@ class FormatterTest extends TestCase
 GEDCOM;
     }
 
-    private function xml()
+    private function xml($bom = true)
     {
+        $bom = intval($bom);
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<GEDCOM xmlns="https://zebooka.com/gedcom/">
+<GEDCOM xmlns="https://zebooka.com/gedcom/" bom="{$bom}">
     <HEAD>
         <SOUR value="TEST">
             <VERS value="5.5.1"/>
@@ -43,11 +46,12 @@ GEDCOM;
 XML;
     }
 
-    private function xmlWithNoise()
+    private function xmlWithNoise($bom = true)
     {
+        $bom = intval($bom);
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<g:GEDCOM xmlns:g="https://zebooka.com/gedcom/" xmlns:noise="https://example.com/noise">
+<g:GEDCOM xmlns:g="https://zebooka.com/gedcom/" xmlns:noise="https://example.com/noise" g:bom="{$bom}">
     <noise:test>123</noise:test>
     <g:HEAD noise:attrib="value" noise:value="hello world">
         <g:SOUR value="TEST">
@@ -75,6 +79,16 @@ XML;
     }
 
     public function test_formatDOMDocument()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML($this->xml());
+        $this->assertEquals(
+            str_replace("\r", '', $this->gedcom()),
+            str_replace("\r", '', Formatter::formatDOMDocument($dom))
+        );
+    }
+
+    public function test_formatDOMDocument_with_bom()
     {
         $dom = new \DOMDocument();
         $dom->loadXML($this->xml());
@@ -116,5 +130,19 @@ XML;
             str_replace("\r", '', $this->gedcom()),
             str_replace("\r", '', Formatter::formatSimpleXMLElement(new \SimpleXMLElement($this->xmlWithNoise())))
         );
+    }
+
+    public function test_bom_stays()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML($this->xml(true));
+        $this->assertStringStartsWith("\xEF\xBB\xBF", Formatter::formatDOMDocument($dom));
+    }
+
+    public function test_bom_absent()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML($this->xml(false));
+        $this->assertStringStartsNotWith("\xEF\xBB\xBF", Formatter::formatDOMDocument($dom));
     }
 }

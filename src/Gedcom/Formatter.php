@@ -14,6 +14,9 @@ class Formatter
     public static function formatDOMDocument(\DOMDocument $dom)
     {
         $gedcom = '';
+        if ($dom->documentElement->getAttribute('bom') || $dom->documentElement->getAttributeNS(Document::XML_NAMESPACE, 'bom')) {
+            $gedcom .=  Document::BOM;
+        }
         foreach ($dom->documentElement->childNodes as $childNode) {
             if ($childNode instanceof \DOMElement) {
                 $line = self::composeLinesFromElement($childNode, 0);

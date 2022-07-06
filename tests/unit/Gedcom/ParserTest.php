@@ -3,10 +3,47 @@
 namespace Test\Zebooka\Gedcom;
 
 use PHPUnit\Framework\TestCase;
+use Zebooka\Gedcom\Document;
 use Zebooka\Gedcom\Parser;
 
 class ParserTest extends TestCase
 {
+    private function xml($bom = true)
+    {
+        $bom = intval($bom);
+        return <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<GEDCOM xmlns="https://zebooka.com/gedcom/" bom="{$bom}">
+    <HEAD>
+        <SOUR value="TEST">
+            <VERS value="5.5.1"/>
+        </SOUR>
+        <DATE value="ABT @#DJULIAN@ 27 JAN 2019"/>
+        <SUBM pointer="SUBMITTER1"/>
+    </HEAD>
+    <SUBM xref="SUBMITTER1">
+        <NAME value="Submitter Name"/>
+    </SUBM>
+    <TRLR/>
+</GEDCOM>
+XML;
+    }
+
+    private function gedcom($bom = true)
+    {
+        return ($bom ? "\xEF\xBB\xBF" : '') .
+            <<<GEDCOM
+0 HEAD
+1 SOUR TEST
+2 VERS 5.5.1
+1 DATE ABT @#DJULIAN@ 27 JAN 2019
+1 SUBM @SUBMITTER1@
+0 @SUBMITTER1@ SUBM
+1 NAME Submitter Name
+0 TRLR
+GEDCOM;
+    }
+
     public function test_createElementFromLine()
     {
         $stack = [];
@@ -35,39 +72,27 @@ class ParserTest extends TestCase
 
     public function test_parseString()
     {
-        $string = <<<GEDCOM
-0 HEAD
-1 SOUR TEST
-2 VERS 5.5.1
-1 DATE ABT @#DJULIAN@ 27 JAN 2019
-1 SUBM @SUBMITTER1@
-0 @SUBMITTER1@ SUBM
-1 NAME Submitter Name
-0 TRLR
-GEDCOM;
-        $xml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<GEDCOM xmlns="https://zebooka.com/gedcom/">
-    <HEAD>
-        <SOUR value="TEST">
-            <VERS value="5.5.1"/>
-        </SOUR>
-        <DATE value="ABT @#DJULIAN@ 27 JAN 2019"/>
-        <SUBM pointer="SUBMITTER1"/>
-    </HEAD>
-    <SUBM xref="SUBMITTER1">
-        <NAME value="Submitter Name"/>
-    </SUBM>
-    <TRLR/>
-</GEDCOM>
-XML;
-
-        $this->assertXmlStringEqualsXmlString($xml, Parser::parseString($string));
+        $this->assertXmlStringEqualsXmlString($this->xml(true), Parser::parseString($this->gedcom(true)));
+        $this->assertXmlStringEqualsXmlString($this->xml(false), Parser::parseString($this->gedcom(false)));
     }
 
     public function test_parseString_fails_on_empty()
     {
         $this->expectExceptionObject(new \UnexpectedValueException('Empty GEDCOM file.'));
         Parser::parseString(' ');
+    }
+
+    public function test_bom_stays()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML(Parser::parseString($this->gedcom(true)));
+        $this->assertEquals(1, $dom->documentElement->getAttribute('bom'));
+    }
+
+    public function test_bom_absent()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML(Parser::parseString($this->gedcom(false)));
+        $this->assertEquals(0, $dom->documentElement->getAttribute('bom'));
     }
 }

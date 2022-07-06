@@ -17,6 +17,7 @@ class Document
         VersionTrait;
 
     const XML_NAMESPACE = 'https://zebooka.com/gedcom/';
+    const BOM = "\xEF\xBB\xBF";
 
     private $sxml;
     private $dom;

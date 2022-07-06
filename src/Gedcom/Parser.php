@@ -45,16 +45,17 @@ class Parser
 
     public static function parseString($gedcom)
     {
-        if ("\xEF\xBB\xBF" == substr($gedcom, 0, 3)) {
-            $encoding = 'UTF-8';
+        $encoding = 'UTF-8';
+        $bom = 0;
+
+        if (Document::BOM == substr($gedcom, 0, 3)) {
             $gedcom = substr($gedcom, 3);
-        } else {
-            $encoding = 'UTF-8';
+            $bom = 1;
         }
-        // TODO add encoding and namespace
+
         $gedcom = explode("\n", str_replace("\r", "\n", $gedcom));
         $xmlHead = sprintf('<?xml version="1.0" encoding="%s"?>', $encoding) . PHP_EOL
-            . sprintf('<GEDCOM xmlns="%s">', htmlspecialchars(Document::XML_NAMESPACE));
+            . sprintf('<GEDCOM xmlns="%s" bom="%d">', htmlspecialchars(Document::XML_NAMESPACE), $bom);
         $stack = [];
         $xml = '';
         foreach ($gedcom as $line) {
