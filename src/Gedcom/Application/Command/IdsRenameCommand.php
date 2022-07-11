@@ -10,10 +10,12 @@ use Zebooka\Gedcom\Service\FamXrefsRenameService;
 use Zebooka\Gedcom\Service\IndiXrefsRenameService;
 use Zebooka\Gedcom\Service\UpdateModifiedService;
 use Zebooka\Gedcom\Service\TransliteratorService;
+use Zebooka\Gedcom\Service\XrefsRenameServiceAbstract;
 
 class IdsRenameCommand extends AbstractCommand
 {
     const OPTION_DRY_RUN = 'dry-run';
+    const OPTION_FORCE = 'force';
 
     protected static $defaultName = 'ids';
 
@@ -24,6 +26,7 @@ class IdsRenameCommand extends AbstractCommand
             ->setHelp('Transform IDs of INDI and FAM records to better format.');
 
         $this->addOption(self::OPTION_DRY_RUN, 'd', InputOption::VALUE_NONE, 'Perform IDs rename, but do not save anything to file.');
+        $this->addOption(self::OPTION_FORCE, 'f', InputOption::VALUE_NONE, 'Force all xrefs to be renamed, unless new xref equals old except last sequence digit.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -38,9 +41,10 @@ class IdsRenameCommand extends AbstractCommand
         $t = new TransliteratorService();
         $u = new UpdateModifiedService();
         foreach ([new IndiXrefsRenameService($t, $u), new FamXrefsRenameService($t, $u)] as $service) {
+            /** @var XrefsRenameServiceAbstract $service */
             $renameMap = $input->getOption(self::OPTION_DRY_RUN)
-                ? $service->collectXrefsToRename($gedcom, $renameMap)
-                : $service->renameXrefs($gedcom, $renameMap);
+                ? $service->collectXrefsToRename($gedcom, $renameMap, $input->getOption(self::OPTION_FORCE))
+                : $service->renameXrefs($gedcom, $renameMap, $input->getOption(self::OPTION_FORCE));
         }
 
         if ($output->isQuiet()) {
