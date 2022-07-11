@@ -7,7 +7,7 @@ use Zebooka\Gedcom\Document;
 abstract class XrefsRenameServiceAbstract
 {
     const LENGTH_LIMIT_55X = 20;
-    const REGEXP = '/^(?<prefix>[A-Z])(?<year>\d+|____)(?<name>[A-Z]+)(?<sequence>\d+)?/';
+    const REGEXP = '/^(?<prefix>[A-Z])(?<year>\d+|____)(?<name>[A-Z]+)(?<sequence>\d+)?$/';
 
     /** @var TransliteratorService */
     protected $transliterateService;
@@ -20,9 +20,9 @@ abstract class XrefsRenameServiceAbstract
         $this->updateModifiedService = $updateModifiedService;
     }
 
-    public function renameXrefs(Document $gedcom, $renameMap = [])
+    public function renameXrefs(Document $gedcom, $renameMap = [], $forceRename = false)
     {
-        $renameMap = $this->collectXrefsToRename($gedcom, $renameMap);
+        $renameMap = $this->collectXrefsToRename($gedcom, $renameMap, $forceRename);
         $nodesUpdated = false;
         foreach ($renameMap as $from => $to) {
             $nodes = $gedcom->xpath("//*[@xref='{$from}'] | //*[@pointer='{$from}']");
@@ -50,23 +50,28 @@ abstract class XrefsRenameServiceAbstract
 
     abstract protected function getNodes(Document $gedcom): \DOMNodeList;
 
-    public function collectXrefsToRename(Document $gedcom, $heap = [])
+    public function collectXrefsToRename(Document $gedcom, $heap = [], $forceRename = false)
     {
         foreach ($this->getNodes($gedcom) as $node) {
             /** @var \DOMElement $node */
-            if ($this->isComposedXref($node->getAttribute('xref'), $gedcom)) {
+            $oldXref = $node->getAttribute('xref');
+            $isComposedXref = $this->isComposedXref($oldXref, $gedcom);
+            if (!$forceRename && $isComposedXref) {
                 continue;
             }
             if (null === ($newXref = $this->composeNodeXref($node, $gedcom))) {
                 continue;
             }
+            if ($forceRename && $isComposedXref && $this->isSameSeqencedXref($oldXref, $newXref)) {
+                continue;
+            }
             while (!$this->isXrefAvailable($newXref, $heap, $gedcom)) {
                 $newXref = $this->increaseXrefSequence($newXref);
             }
-            if ($node->getAttribute('xref') === $newXref) {
+            if ($oldXref === $newXref) {
                 continue;
             }
-            $heap[$node->getAttribute('xref')] = $newXref;
+            $heap[$oldXref] = $newXref;
         }
         return $heap;
     }
@@ -86,6 +91,12 @@ abstract class XrefsRenameServiceAbstract
         }
         Document::validateXref($xref);
         return !$gedcom->xpath("//*[@xref='{$xref}']")->count() || array_key_exists($xref, $heap);
+    }
+
+    public function isSameSeqencedXref(string $oldXref, string $newXref): bool
+    {
+        $oldXrefPart = preg_replace('/(\d+)$/', '', $oldXref);
+        return 0 === strpos($newXref, $oldXrefPart);
     }
 
     abstract public function composeNodeXref(\DOMElement $node, Document $gedcom): ?string;

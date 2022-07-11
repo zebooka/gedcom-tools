@@ -73,11 +73,16 @@ class FamXrefsRenameServiceTest extends TestCase
         $service = $this->service();
         $renameMap = $service->collectXrefsToRename($this->gedcom());
         $this->assertIsArray($renameMap);
-        $this->assertCount(3, $renameMap);
+        $this->assertCount(2, $renameMap);
         $this->assertEquals('F1999FAMILY', $renameMap['FAM']);
-        $this->assertEquals('F1970FAMILY', $renameMap['GFAM']);
         $this->assertEquals('F____FAMILY', $renameMap['DFAM']);
 
+        $renameMap = $service->collectXrefsToRename($this->gedcom(), [], true);
+        $this->assertIsArray($renameMap);
+        $this->assertCount(3, $renameMap);
+        $this->assertEquals('F1999FAMILY', $renameMap['FAM']);
+        $this->assertEquals('F1970FAMILY', $renameMap['F1970ANOTHER2']);
+        $this->assertEquals('F____FAMILY', $renameMap['DFAM']);
     }
 
     public function test_increaseXrefSeqence()
@@ -102,5 +107,14 @@ class FamXrefsRenameServiceTest extends TestCase
         $service->renameXrefs($gedcom);
         $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_fam.ged'), "{$gedcom}");
+    }
+
+    public function test_renameXrefs_force()
+    {
+        $gedcom = $this->gedcom();
+        $service = $this->service();
+        $service->renameXrefs($gedcom, [], true);
+        $this->fixGedcomModifiedDate($gedcom);
+        $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_fam_force.ged'), "{$gedcom}");
     }
 }
