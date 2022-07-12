@@ -180,4 +180,34 @@ GED;
 GED;
         $this->assertEquals($processedGedcomString, "{$gedcom}");
     }
+
+    public function test_skip_empty_names()
+    {
+        $gedcomString = <<<GED
+0 HEAD
+0 @I1@ INDI
+1 NAME
+2 GIVN
+2 SURN
+0 TRLR
+
+GED;
+
+        $gedcom = Document::createFromGedcom($gedcomString);
+
+        $service = $this->service();
+        $service->romanizeNames($gedcom);
+        $this->fixGedcomModifiedDate($gedcom);
+
+        $processedGedcomString = <<<GED
+0 HEAD
+0 @I1@ INDI
+1 NAME
+2 GIVN
+2 SURN
+0 TRLR
+
+GED;
+        $this->assertEquals($processedGedcomString, "{$gedcom}");
+    }
 }

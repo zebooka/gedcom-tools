@@ -43,6 +43,9 @@ class RomanizeService
         $nodesUpdated = false;
         foreach ($names as $name) {
             /** @var \DOMElement $name */
+            if ('' === $name->getAttribute('value')) {
+                continue;
+            }
             if (!$gedcom->xpath('./G:ROMN', $name)->length || $forceRewrite) {
                 $nodesUpdated = true;
                 $romn = $this->updateNodeValue($gedcom, $name, 'ROMN', $this->transliterateService->transliterate($name->getAttribute('value')));
