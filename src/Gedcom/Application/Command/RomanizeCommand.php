@@ -13,7 +13,7 @@ use Zebooka\Gedcom\Service\TransliteratorService;
 class RomanizeCommand extends AbstractCommand
 {
     const OPTION_DRY_RUN = 'dry-run';
-    const OPTION_FIX_ONLY = 'fix-only';
+    const OPTION_SPACE_ONLY = 'space-only';
     const OPTION_OVERWRITE = 'overwrite';
     const OPTION_TRANSLITERATION = 'transliteration';
     const OPTION_ROMANIZED_TYPE = 'romanized-type';
@@ -30,7 +30,7 @@ class RomanizeCommand extends AbstractCommand
         $this->addOption(self::OPTION_OVERWRITE, 'o', InputOption::VALUE_NONE, 'Overwrite existing romanizations.');
         $this->addOption(self::OPTION_TRANSLITERATION, 't', InputOption::VALUE_REQUIRED, 'Transliteration ID. See php/icu docs for examples.', TransliteratorService::CYRILLIC);
         $this->addOption(self::OPTION_ROMANIZED_TYPE, 'r', InputOption::VALUE_REQUIRED, 'Romanized TYPE to write in tag. See GEDCOM docs.');
-        $this->addOption(self::OPTION_FIX_ONLY, 'f', InputOption::VALUE_NONE, 'Only fix spaces in names. No romanization applied.');
+        $this->addOption(self::OPTION_SPACE_ONLY, 's', InputOption::VALUE_NONE, 'Only fix spaces in names. No romanization applied.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -39,13 +39,12 @@ class RomanizeCommand extends AbstractCommand
 
         $gedcom = $this->getGedcom($input, $output);
 
-
         $t = new TransliteratorService($input->getOption(self::OPTION_TRANSLITERATION), $input->getOption(self::OPTION_ROMANIZED_TYPE));
         $u = new UpdateModifiedService();
         $service = new RomanizeService($t, $u);
         $err->writeln("--> Fixing names spaces", OutputInterface::VERBOSITY_NORMAL);
         $service->fixSpaceAroundFamilyName($gedcom);
-        if (!$input->getOption(self::OPTION_FIX_ONLY)) {
+        if (!$input->getOption(self::OPTION_SPACE_ONLY)) {
             $err->writeln("--> Romanizing names", OutputInterface::VERBOSITY_NORMAL);
             $service->romanizeNames($gedcom);
         }

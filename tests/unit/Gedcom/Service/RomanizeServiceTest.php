@@ -58,8 +58,8 @@ GED;
 1 SOUR
 2 NAME Program
 0 @I1@ INDI
-1 NAME Константин Эдуардович /ЦИОЛКОВСКИЙ/
-2 GIVN Константин, Эдуардович
+1 NAME Константинь Эдуардович /ЦИОЛКОВСКИЙ/
+2 GIVN Константинь, Эдуардович
 2 SURN ЦИОЛКОВСКИЙ
 0 TRLR
 
@@ -74,8 +74,8 @@ GED;
         $processedGedcomString = <<<GED
 0 HEAD
 0 @I1@ INDI
-1 NAME Константин Эдуардович /ЦИОЛКОВСКИЙ/
-2 GIVN Константин, Эдуардович
+1 NAME Константинь Эдуардович /ЦИОЛКОВСКИЙ/
+2 GIVN Константинь, Эдуардович
 2 SURN ЦИОЛКОВСКИЙ
 2 ROMN Konstantin Eduardovich /TSIOLKOVSKIY/
 3 GIVN Konstantin, Eduardovich
