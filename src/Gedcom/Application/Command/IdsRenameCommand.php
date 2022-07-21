@@ -39,7 +39,7 @@ class IdsRenameCommand extends AbstractCommand
 
         $renameMap = [];
         $t = new TransliteratorService();
-        $u = new UpdateModifiedService();
+        $u = new UpdateModifiedSцervice();
         foreach ([new IndiXrefsRenameService($t, $u), new FamXrefsRenameService($t, $u)] as $service) {
             /** @var XrefsRenameServiceAbstract $service */
             $renameMap = $input->getOption(self::OPTION_DRY_RUN)
@@ -55,7 +55,8 @@ class IdsRenameCommand extends AbstractCommand
             }
         } else {
             foreach ($renameMap as $from => $to) {
-                $output->writeln("<fg=gray>{$from}</> <fg=cyan>--></> <fg=bright-white>{$to}</>", OutputInterface::VERBOSITY_NORMAL);
+                $fromPadded = str_pad($from, IndiXrefsRenameService::LENGTH_LIMIT_55X, ' ', STR_PAD_RIGHT);
+                $output->writeln("<fg=gray>{$fromPadded}</> <fg=cyan>--></> <fg=bright-white>{$to}</>", OutputInterface::VERBOSITY_NORMAL);
             }
         }
 

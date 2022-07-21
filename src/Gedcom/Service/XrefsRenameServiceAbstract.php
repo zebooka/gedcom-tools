@@ -62,7 +62,7 @@ abstract class XrefsRenameServiceAbstract
             if (null === ($newXref = $this->composeNodeXref($node, $gedcom))) {
                 continue;
             }
-            if ($forceRename && $isComposedXref && $this->isSameSeqencedXref($oldXref, $newXref)) {
+            if ($forceRename && $isComposedXref && $this->isSameSequencedXref($oldXref, $newXref)) {
                 continue;
             }
             while (!$this->isXrefAvailable($newXref, $heap, $gedcom)) {
@@ -93,11 +93,14 @@ abstract class XrefsRenameServiceAbstract
         return !$gedcom->xpath("//*[@xref='{$xref}']")->count() || array_key_exists($xref, $heap);
     }
 
-    public function isSameSeqencedXref(string $oldXref, string $newXref): bool
+    public function isSameSequencedXref(string $oldXref, string $newXref): bool
     {
-        $seqPart = preg_match('/(\d+)$/', $oldXref, $m) ? $m[1] : null;
-        $oldXrefPart = preg_replace('/(\d+)$/', '', $oldXref);
-        return substr($newXref, 0, null === $seqPart ? null : -strlen($seqPart)) === $oldXrefPart;
+        if (preg_match(static::REGEXP, $oldXref, $o) && preg_match(static::REGEXP, $newXref, $n)) {
+            return $oldXref === $newXref
+                || (!empty($o['sequence']) && $oldXref === $this->spliceXrefSequence($newXref, $o['sequence']))
+                || (!empty($n['sequence']) && $newXref === $this->spliceXrefSequence($oldXref, $n['sequence']));
+        }
+        return false;
     }
 
     abstract public function composeNodeXref(\DOMElement $node, Document $gedcom): ?string;
@@ -108,10 +111,18 @@ abstract class XrefsRenameServiceAbstract
         if (!preg_match(static::REGEXP, $xref, $m)) {
             throw new \UnexpectedValueException("XREF '$xref' does not match regular expression.");
         }
-        $sequence = (!empty($m['sequence']) ? $m['sequence'] + 1 : 2);
+        return $this->spliceXrefSequence($xref, !empty($m['sequence']) ? $m['sequence'] + 1 : 2);
+    }
+
+    public function spliceXrefSequence(string $xref, string $newSequence)
+    {
+        Document::validateXref($xref);
+        if (!preg_match(static::REGEXP, $xref, $m)) {
+            throw new \UnexpectedValueException("XREF '$xref' does not match regular expression.");
+        }
         $prefix = $m['prefix'] . $m['year'] . $m['name'];
-        return (strlen($prefix . $sequence) > static::LENGTH_LIMIT_55X
-            ? substr($prefix, 0, static::LENGTH_LIMIT_55X - strlen($sequence)) . $sequence
-            : $prefix . $sequence);
+        return (strlen($prefix . $newSequence) > static::LENGTH_LIMIT_55X
+            ? substr($prefix, 0, static::LENGTH_LIMIT_55X - strlen($newSequence)) . $newSequence
+            : $prefix . $newSequence);
     }
 }

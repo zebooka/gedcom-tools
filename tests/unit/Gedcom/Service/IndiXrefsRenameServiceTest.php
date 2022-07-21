@@ -110,11 +110,43 @@ class IndiXrefsRenameServiceTest extends TestCase
         $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_indi.ged'), "{$gedcom}");
     }
 
-    public function test_isSameSeqencedXref()
+    public function dataProvider_isSameSeqencedXref()
+    {
+        return [
+            ['I1234ABCDEFGHIJKLMNO', 'I1234ABCDEFGHIJKLMNO', true],
+            ['I1234ABCDEFGHIJKLMN1', 'I1234ABCDEFGHIJKLMNO', true],
+            ['I1234ABCDEFGHIJK1111', 'I1234ABCDEFGHIJKLMNO', true],
+            ['I1234ABCDEFGHIJK1111', 'I1234ABCDEFGHIJKLMN1', true],
+            ['I1234ABCDEFGHIJK1111', 'I1234ABCDEFGHIJKLM11', true],
+            ['I1234ABCDEFGHIJK1111', 'I1234ABCDEFGHIJK1111', true],
+
+            ['I1234ABCDEFGHIJKLM22', 'I1234ABCDEFGHIJKLMN', true],
+            ['I1234ABCDEFGHIJKLM22', 'I1234ABCDEFGHIJKLM', true],
+            ['I1234ABCDEFGHIJKLMN2', 'I1234ABCDEFGHIJKLMN', true],
+
+            ['I1234ABCDEFGHIJK3', 'I1234ABCDEFGHIJK', true],
+            ['I1234ABCDEFGHIJK333', 'I1234ABCDEFGHIJK', true],
+
+            ['I1234ABCDEFGHI44', 'I1234ABCDEFGHIJK', false],
+            ['I1234ABCDEFGHI44', 'I1234ABCDEFG', false],
+            ['I1234ABCDEFGHI444', 'I1234ABCDEFGHIJKL', false],
+            ['I1234ABCDE444', 'I1234ABCDEFGHIJKL', false],
+            ['I1234ABCDE4', 'I1234ABCDEFGHIJKLMNO', false],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProvider_isSameSeqencedXref
+     */
+    public function test_isSameSeqencedXref($oldXref, $newXref, $isSame)
     {
         $service = $this->service();
-        $this->assertTrue($service->isSameSeqencedXref('I1985TESTTESTTEST123','I1985TESTTESTTESTTES'));
-        $this->assertFalse($service->isSameSeqencedXref('I1985TESTTEST123','I1985TESTTESTTESTTES'));
-        $this->assertFalse($service->isSameSeqencedXref('I1985TESTTESTTEST','I1985TESTTESTTESTTES'));
+        if ($isSame) {
+            $this->assertTrue($service->isSameSequencedXref($oldXref, $newXref));
+            $this->assertTrue($service->isSameSequencedXref($newXref, $oldXref));
+        } else {
+            $this->assertFalse($service->isSameSequencedXref($oldXref, $newXref));
+            $this->assertFalse($service->isSameSequencedXref($newXref, $oldXref));
+        }
     }
 }
