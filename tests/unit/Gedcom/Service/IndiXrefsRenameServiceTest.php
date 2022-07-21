@@ -109,4 +109,12 @@ class IndiXrefsRenameServiceTest extends TestCase
         $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_indi.ged'), "{$gedcom}");
     }
+
+    public function test_isSameSeqencedXref()
+    {
+        $service = $this->service();
+        $this->assertTrue($service->isSameSeqencedXref('I1985TESTTESTTEST123','I1985TESTTESTTESTTES'));
+        $this->assertFalse($service->isSameSeqencedXref('I1985TESTTEST123','I1985TESTTESTTESTTES'));
+        $this->assertFalse($service->isSameSeqencedXref('I1985TESTTESTTEST','I1985TESTTESTTESTTES'));
+    }
 }

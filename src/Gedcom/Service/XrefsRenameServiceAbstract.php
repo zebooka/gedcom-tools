@@ -95,8 +95,9 @@ abstract class XrefsRenameServiceAbstract
 
     public function isSameSeqencedXref(string $oldXref, string $newXref): bool
     {
+        $seqPart = preg_match('/(\d+)$/', $oldXref, $m) ? $m[1] : null;
         $oldXrefPart = preg_replace('/(\d+)$/', '', $oldXref);
-        return 0 === strpos($newXref, $oldXrefPart);
+        return substr($newXref, 0, null === $seqPart ? null : -strlen($seqPart)) === $oldXrefPart;
     }
 
     abstract public function composeNodeXref(\DOMElement $node, Document $gedcom): ?string;
