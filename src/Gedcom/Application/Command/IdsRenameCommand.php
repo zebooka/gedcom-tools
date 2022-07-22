@@ -39,7 +39,7 @@ class IdsRenameCommand extends AbstractCommand
 
         $renameMap = [];
         $t = new TransliteratorService();
-        $u = new UpdateModifiedSцervice();
+        $u = new UpdateModifiedService();
         foreach ([new IndiXrefsRenameService($t, $u), new FamXrefsRenameService($t, $u)] as $service) {
             /** @var XrefsRenameServiceAbstract $service */
             $renameMap = $input->getOption(self::OPTION_DRY_RUN)

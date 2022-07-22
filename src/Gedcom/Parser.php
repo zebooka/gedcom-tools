@@ -27,11 +27,21 @@ class Parser
         $close = self::closeTags($stack, (int)$matches['level']);
         array_push($stack, $matches['tag']);
         return $close . '<' . $matches['tag']
-            . (isset($matches['xref']) && '' !== $matches['xref'] ? ' xref="' . htmlspecialchars($matches['xref']) . '"' : '')
-            . (isset($matches['pointer']) && '' !== $matches['pointer'] ? ' pointer="' . htmlspecialchars($matches['pointer']) . '"' : '')
-            . (isset($matches['escape']) && '' !== $matches['escape'] ? ' escape="' . htmlspecialchars($matches['escape']) . '"' : '')
-            . (isset($matches['value']) && '' !== $matches['value'] ? ' value="' . htmlspecialchars($matches['value']) . '"' : '')
+            . (isset($matches['xref']) && '' !== $matches['xref'] ? ' xref="' . self::escape($matches['xref']) . '"' : '')
+            . (isset($matches['pointer']) && '' !== $matches['pointer'] ? ' pointer="' . self::escape($matches['pointer']) . '"' : '')
+            . (isset($matches['escape']) && '' !== $matches['escape'] ? ' escape="' . self::escape($matches['escape']) . '"' : '')
+            . (isset($matches['value']) && '' !== $matches['value'] ? ' value="' . self::escape($matches['value']) . '"' : '')
             . '>';
+    }
+
+    /**
+     * Escape string workaround function
+     * @param string $string
+     * @return string
+     */
+    public static function escape(string $string): string
+    {
+        return str_replace(["\t"],["&#9;"], htmlspecialchars($string));
     }
 
     public static function closeTags(&$stack, $expectedLevel = 0)
