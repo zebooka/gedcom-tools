@@ -13,5 +13,7 @@ class TransliteratorServiceTest extends TestCase
         $this->assertEquals('Vasya Pupkin', $service->transliterate('Вася Пупкин'));
         $this->assertEquals('Gleb Zhiglov', $service->transliterate('Глеб Жиглов'));
         $this->assertEquals('Volodya Sharapov', $service->transliterate('Володя Шарапов'));
+        $this->assertEquals('Elochka Lyudoyed', $service->transliterate('Элочка Людоед'));
+        $this->assertEquals('Nelli Yovovich', $service->transliterate('Нэлли Йовович'));
     }
 }
