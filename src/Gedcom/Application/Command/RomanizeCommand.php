@@ -46,7 +46,7 @@ class RomanizeCommand extends AbstractCommand
         $service->fixSpaceAroundFamilyName($gedcom);
         if (!$input->getOption(self::OPTION_SPACE_ONLY)) {
             $err->writeln("--> Romanizing names", OutputInterface::VERBOSITY_NORMAL);
-            $service->romanizeNames($gedcom);
+            $service->romanizeNames($gedcom, $input->getOption(self::OPTION_OVERWRITE));
         }
 
         if (!$input->getOption(self::OPTION_DRY_RUN)) {

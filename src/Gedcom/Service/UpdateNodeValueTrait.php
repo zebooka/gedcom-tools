@@ -6,6 +6,13 @@ use Zebooka\Gedcom\Document;
 
 trait UpdateNodeValueTrait
 {
+    /**
+     * @param Document $gedcom
+     * @param \DOMElement $parentNode
+     * @param string $nodeName
+     * @param string|null $value
+     * @return \DOMElement|false
+     */
     protected function updateNodeValue(Document $gedcom, \DOMElement $parentNode, string $nodeName, ?string $value)
     {
         /** @var \DOMElement $node */

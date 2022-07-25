@@ -3,6 +3,7 @@
 namespace Zebooka\Gedcom\Service;
 
 use Zebooka\Gedcom\Document;
+use Zebooka\Gedcom\Formatter;
 
 class RomanizeService
 {
@@ -27,9 +28,12 @@ class RomanizeService
             /** @var \DOMElement $node */
             $old = trim($node->getAttribute('value'));
             if (preg_match('#^(.*[^\s])/(.*)/$#', $old, $m)) {
-                $node->setAttribute('value', "{$m[1]} /{$m[2]}/");
-                $this->updateModifiedService->updateNodeModificationDate($gedcom, $node);
-                $nodesUpdated = true;
+                $new = "{$m[1]} /{$m[2]}/";
+                if ($old !== $new) {
+                    $node->setAttribute('value', $new);
+                    $this->updateModifiedService->updateNodeModificationDate($gedcom, $node);
+                    $nodesUpdated = true;
+                }
             }
         }
         if ($nodesUpdated) {
@@ -47,11 +51,22 @@ class RomanizeService
                 continue;
             }
             if (!$gedcom->xpath('./G:ROMN', $name)->length || $forceRewrite) {
-                $nodesUpdated = true;
-                $romn = $this->updateNodeValue($gedcom, $name, 'ROMN', $this->transliterateService->transliterate($name->getAttribute('value')));
+                $oldGedcom = Formatter::composeLinesFromElement($name, 1);
+
+                $romn = $this->updateNodeValue(
+                    $gedcom,
+                    $name,
+                    'ROMN',
+                    $this->transliterateService->transliterate($name->getAttribute('value'))
+                );
                 foreach (['NPFX', 'GIVN', 'NICK', 'SPFX', 'SURN', 'NSFX'] as $tag) {
                     if ($namePart = $gedcom->xpath("./G:{$tag}", $name)->item(0)) {
-                        $this->updateNodeValue($gedcom, $romn, $tag, $this->transliterateService->transliterate($namePart->getAttribute('value')));
+                        $this->updateNodeValue(
+                            $gedcom,
+                            $romn,
+                            $tag,
+                            $this->transliterateService->transliterate($namePart->getAttribute('value'))
+                        );
                     }
                 }
                 if ($romanizedType = $this->transliterateService->romanizedType()) {
@@ -62,7 +77,11 @@ class RomanizeService
                         $type->parentNode->removeChild($type);
                     }
                 }
-                $this->updateModifiedService->updateNodeModificationDate($gedcom, $name);
+                $newGedcom = Formatter::composeLinesFromElement($name, 1);
+                if ($newGedcom !== $oldGedcom) {
+                    $nodesUpdated = true;
+                    $this->updateModifiedService->updateNodeModificationDate($gedcom, $name);
+                }
             }
         }
         if ($nodesUpdated) {
