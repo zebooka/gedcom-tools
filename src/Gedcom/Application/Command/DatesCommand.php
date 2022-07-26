@@ -33,9 +33,9 @@ class DatesCommand extends AbstractCommand
         $err->writeln("--> Optimizing dates", OutputInterface::VERBOSITY_NORMAL);
 
         $c = new DatesService(new UpdateModifiedService());
-        $c->setDeatYifDeatDateEmpty($gedcom);
-        $c->removeDeatYifDeatDateNotEmpty($gedcom);
-        $c->removeEmptyDateFromElementsExceptBirtAndDeat($gedcom);
+        $c->addDatePlacForBirtDeatBuriCrem($gedcom);
+        $c->setDeatBuriCremYifDateEmpty($gedcom);
+        $c->removeDeatBuriCremYifDateNotEmpty($gedcom);
 
         if (!$input->getOption(self::OPTION_DRY_RUN)) {
             $this->putGedcom($gedcom, $input, $output);
