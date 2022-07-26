@@ -42,9 +42,12 @@ class IdsRenameCommand extends AbstractCommand
         $u = new UpdateModifiedService();
         foreach ([new IndiXrefsRenameService($t, $u), new FamXrefsRenameService($t, $u)] as $service) {
             /** @var XrefsRenameServiceAbstract $service */
-            $renameMap = $input->getOption(self::OPTION_DRY_RUN)
-                ? $service->collectXrefsToRename($gedcom, $renameMap, $input->getOption(self::OPTION_FORCE))
-                : $service->renameXrefs($gedcom, $renameMap, $input->getOption(self::OPTION_FORCE));
+            $renameMap = array_merge(
+                $renameMap,
+                $input->getOption(self::OPTION_DRY_RUN)
+                    ? $service->collectXrefsToRename($gedcom, [], $input->getOption(self::OPTION_FORCE))
+                    : $service->renameXrefs($gedcom, [], $input->getOption(self::OPTION_FORCE))
+            );
         }
 
         if ($output->isQuiet()) {

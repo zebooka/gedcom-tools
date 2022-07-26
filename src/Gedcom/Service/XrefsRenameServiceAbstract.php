@@ -3,6 +3,7 @@
 namespace Zebooka\Gedcom\Service;
 
 use Zebooka\Gedcom\Document;
+use Zebooka\Gedcom\Formatter;
 
 abstract class XrefsRenameServiceAbstract
 {
