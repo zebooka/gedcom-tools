@@ -25,7 +25,7 @@ class DatesServiceTest extends TestCase
     {
         $gedcom = $this->gedcom(__DIR__ . '/../../../res/dates-service/initial.ged');
         $this->service()->setDeatBuriCremYifDateEmpty($gedcom);
-//        $this->fixGedcomModifiedDate($gedcom);
+        $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(
             "{$this->gedcom(__DIR__ . '/../../../res/dates-service/setDeatBuriCremYifDateEmpty.ged')}",
             "{$gedcom}"
@@ -36,7 +36,7 @@ class DatesServiceTest extends TestCase
     {
         $gedcom = $this->gedcom(__DIR__ . '/../../../res/dates-service/initial.ged');
         $this->service()->removeDeatBuriCremYifDateNotEmpty($gedcom);
-//        $this->fixGedcomModifiedDate($gedcom);
+        $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(
             "{$this->gedcom(__DIR__ . '/../../../res/dates-service/removeDeatBuriCremYifDateNotEmpty.ged')}",
             "{$gedcom}"
@@ -47,7 +47,7 @@ class DatesServiceTest extends TestCase
     {
         $gedcom = $this->gedcom(__DIR__ . '/../../../res/dates-service/initial.ged');
         $this->service()->addDatePlacForBirtDeatBuriCrem($gedcom);
-//        $this->fixGedcomModifiedDate($gedcom);
+        $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(
             "{$this->gedcom(__DIR__ . '/../../../res/dates-service/addDatePlacForBirtDeatBuriCrem.ged')}",
             "{$gedcom}"
