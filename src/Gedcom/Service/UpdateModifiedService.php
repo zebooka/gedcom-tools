@@ -30,6 +30,9 @@ class UpdateModifiedService
         $name = $this->updateNodeValue($gedcom, $sour, 'NAME', self::NAME);
         $corp = $this->updateNodeValue($gedcom, $sour, 'CORP', self::CORP);
         $addr = $this->updateNodeValue($gedcom, $corp, 'ADDR', self::ADDR);
+
+        $date = $this->updateNodeValue($gedcom, $head, 'DATE', strtoupper(date('j M Y')));
+        $time = $this->updateNodeValue($gedcom, $date, 'TIME', strtoupper(date('H:i:s')));
     }
 
     public function updateNodeModificationDate(Document $gedcom, \DOMElement $node)
