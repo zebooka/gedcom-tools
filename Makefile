@@ -35,7 +35,7 @@ stop:
 
 sh: ## Open shell in container
 sh:
-	docker-compose exec -- php /bin/sh
+	docker-compose exec -- php73 /bin/sh
 
 test: ## Run tests
 test:
