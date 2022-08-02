@@ -35,7 +35,8 @@ class MediaStructureService
             foreach ($old as $i => $indiMedia) {
                 if ($indiMedia->directory()->isDir()) {
                     $di = new \SplFileInfo($indiMedia->directory()->getPath() . DIRECTORY_SEPARATOR . IndiMedia::composeDirectoryName($indiMedia->indi()));
-                    if ($indiMedia->directory()->getPathname() === $di->getPathname()) {
+                    if ($indiMedia->directory()->getPathname() === $di->getPathname()
+                        || $indiMedia->meta()->blockRename ?? false) {
                         continue;
                     }
                     rename($indiMedia->directory()->getPathname(), $di->getPathname());

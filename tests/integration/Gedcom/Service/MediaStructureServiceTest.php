@@ -41,7 +41,7 @@ class MediaStructureServiceTest extends TestCase
             '2005 FAMILY Daughter Name',
             '1975 FAMILY Father Daddy',
             '1980~ FAMILY Mother',
-            '1950~ FAMILY Grand Pa',
+            '1950~YYYY~ FAMILY Grand Pa',
             '1948~2020~ FAMILY Granny',
             '2020 FAMILY Grand Daughter',
             'FAMILY Uncle',

@@ -63,6 +63,9 @@ class IndiMedia
                 $dates[] = ($birt instanceof DateCalendarInterface ? '-' : '~');
                 $dates[] = $deat->year();
                 $dates[] = ($deat instanceof DateCalendarInterface ? '' : '~');
+            } elseif ($indi->isDead()) {
+                $dates[] = ($birt instanceof DateCalendarInterface ? '-' : '~');
+                $dates[] = 'YYYY~';
             } else {
                 $dates[] = ($birt instanceof DateCalendarInterface ? '' : '~');
             }
