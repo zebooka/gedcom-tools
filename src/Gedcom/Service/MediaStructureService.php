@@ -30,14 +30,31 @@ class MediaStructureService
 
         $old = $this->readStructure($dir);
         $new = $this->readGedcom($old);
+        foreach ($new as $indiMedia) {
+            if (!$indiMedia->directory()->isDir()) {
+                mkdir($indiMedia->directory()->getPathname(), 0777, true);
+            }
+            $this->writeMetaForIndi($indiMedia);
+        }
+
         $renamed = [];
+        $existingsDirs = [];
+        foreach ($old as $indiMedia) {
+            $existingsDirs[] = $indiMedia->directory()->getRealPath();
+        }
+        foreach ($new as $indiMedia) {
+            $existingsDirs[] = $indiMedia->directory()->getRealPath();
+        }
         if ($syncDirNames) {
             foreach ($old as $i => $indiMedia) {
                 if ($indiMedia->directory()->isDir()) {
                     $di = new \SplFileInfo($indiMedia->directory()->getPath() . DIRECTORY_SEPARATOR . IndiMedia::composeDirectoryName($indiMedia->indi()));
                     if ($indiMedia->directory()->getPathname() === $di->getPathname()
-                        || $indiMedia->meta()->blockRename ?? false) {
+                        || ($indiMedia->meta()->blockRename ?? false)) {
                         continue;
+                    }
+                    if (in_array($di->getPathname(), $existingsDirs)) {
+                        $di = new \SplFileInfo($di->getPathname() . " {$indiMedia->indi()->xref()}");
                     }
                     rename($indiMedia->directory()->getPathname(), $di->getPathname());
                     $renamedIndiMedia = new IndiMedia(
@@ -48,17 +65,13 @@ class MediaStructureService
                     $this->writeMetaForIndi($renamedIndiMedia);
                     unset($old[$i]);
                     $renamed[] = $renamedIndiMedia;
+                    $existingsDirs[] = $di->getRealPath();
                 } else {
                     throw new \RuntimeException("Directory '{$indiMedia->directory()->getPathname()}' for existing media struct '{$indiMedia->indi()->xref()}' does not exist.");
                 }
             }
         }
-        foreach ($new as $indiMedia) {
-            if (!$indiMedia->directory()->isDir()) {
-                mkdir($indiMedia->directory()->getPathname(), 0777, true);
-            }
-            $this->writeMetaForIndi($indiMedia);
-        }
+
         $this->writeMetaForNew($this->directoryForNew);
         $old = array_values($old);
         $new = array_values(array_merge($new, $renamed));
@@ -126,14 +139,14 @@ class MediaStructureService
             if (null === $dirname) {
                 continue; // we do not generate dirs for INDIs without names
             }
-            $di = $this->directoryForNew . DIRECTORY_SEPARATOR . $dirname;
-            if (in_array($di, $existingsDirs)) {
-                $di .= " ({$indi->xref()})";
+            $dirname = $this->directoryForNew . DIRECTORY_SEPARATOR . $dirname;
+            if (in_array($dirname, $existingsDirs)) {
+                $dirname .= " ({$indi->xref()})";
             }
-            $existingsDirs[] = $di;
+            $existingsDirs[] = $dirname;
             $indiMedias[$indi->xref()] = new IndiMedia(
                 $indi,
-                new \SplFileInfo($di),
+                new \SplFileInfo($dirname),
                 (object)['xref' => $indi->xref()]
             );
         }
