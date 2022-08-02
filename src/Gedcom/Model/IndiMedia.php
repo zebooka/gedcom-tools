@@ -2,6 +2,7 @@
 
 namespace Zebooka\Gedcom\Model;
 
+use Zebooka\Gedcom\Formatter;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 use Zebooka\Gedcom\Model\Date\YearInterface;
 
@@ -33,7 +34,11 @@ class IndiMedia
 
     public function meta()
     {
-        return $this->meta;
+        return (object)array_merge([
+            'isIndi' => true,
+            'xref' => $this->indi->xref(),
+            'gedcom' => Formatter::composeLinesFromElement($this->indi->node(), 0),
+        ], (array)$this->meta);
     }
 
     public static function composeDirectoryName(Indi $indi): ?string

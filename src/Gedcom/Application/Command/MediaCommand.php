@@ -7,15 +7,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Zebooka\Gedcom\Service\DatesService;
+use Zebooka\Gedcom\Model\IndiMedia;
 use Zebooka\Gedcom\Service\IndiXrefsRenameService;
 use Zebooka\Gedcom\Service\MediaStructureService;
-use Zebooka\Gedcom\Service\UpdateModifiedService;
 
 class MediaCommand extends AbstractCommand
 {
     const ARGUMENT_DIR = 'directory';
     const OPTION_DRY_RUN = 'dry-run';
+    const OPTION_OVERWRITE = 'overwrite';
 
     protected static $defaultName = 'media';
 
@@ -31,6 +31,7 @@ class MediaCommand extends AbstractCommand
             ->setHelp('Generate directories for storing persons media.');
 
         $this->addOption(self::OPTION_DRY_RUN, 'd', InputOption::VALUE_NONE, 'Scan existing directories and read GEDCOM to form list of directories.');
+        $this->addOption(self::OPTION_OVERWRITE, 'o', InputOption::VALUE_NONE, 'Rename existing directories to match person\'s data.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -44,26 +45,28 @@ class MediaCommand extends AbstractCommand
         $service = new MediaStructureService($gedcom);
 
         if (!$input->getOption(self::OPTION_DRY_RUN)) {
-            $service->generateStructure(new \SplFileInfo($input->getArgument(self::ARGUMENT_DIR)));
+            list ($old, $new) = $service->generateStructure(
+                new \SplFileInfo($input->getArgument(self::ARGUMENT_DIR)),
+                $input->getOption(self::OPTION_OVERWRITE)
+            );
         } else {
             $old = $service->readStructure(new \SplFileInfo($input->getArgument(self::ARGUMENT_DIR)));
             $new = $service->readGedcom($old);
-            foreach ($old as $indi) {
-                $dir = $indi->directory()->getPathname();
+        }
+
+        $results = [
+            [$old, 'gray', 'bright-white'],
+            [$new, 'cyan', 'bright-green'],
+        ];
+        foreach ($results as list($indiMedias, $color1, $color2)) {
+            /** @var IndiMedia[] $indiMedias */
+            foreach ($indiMedias as $indi) {
+                $dir = $indi->directory()->getRealPath();
                 if ($output->isQuiet()) {
                     $output->writeln("{$indi->indi()->xref()}\t{$dir}", OutputInterface::VERBOSITY_QUIET);
                 } else {
                     $xrefPadded = str_pad($indi->indi()->xref(), IndiXrefsRenameService::LENGTH_LIMIT_55X, ' ', STR_PAD_RIGHT);
-                    $output->writeln("<fg=gray>{$xrefPadded} --></> <fg=bright-white>{$dir}</>", OutputInterface::VERBOSITY_NORMAL);
-                }
-            }
-            foreach ($new as $indi) {
-                $dir = $indi->directory()->getPathname();
-                if ($output->isQuiet()) {
-                    $output->writeln("{$indi->indi()->xref()}\t{$dir}", OutputInterface::VERBOSITY_QUIET);
-                } else {
-                    $xrefPadded = str_pad($indi->indi()->xref(), IndiXrefsRenameService::LENGTH_LIMIT_55X, ' ', STR_PAD_RIGHT);
-                    $output->writeln("<fg=green>{$xrefPadded} --></> <fg=bright-green>{$dir}</>", OutputInterface::VERBOSITY_NORMAL);
+                    $output->writeln("<fg={$color1}>{$xrefPadded} --></> <fg={$color2}>{$dir}</>", OutputInterface::VERBOSITY_NORMAL);
                 }
             }
         }

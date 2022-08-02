@@ -30,12 +30,23 @@ class MediaStructureService
 
         $old = $this->readStructure($dir);
         $new = $this->readGedcom($old);
+        $renamed = [];
         if ($syncDirNames) {
-            foreach ($old as $indiMedia) {
+            foreach ($old as $i => $indiMedia) {
                 if ($indiMedia->directory()->isDir()) {
                     $di = new \SplFileInfo($indiMedia->directory()->getPath() . DIRECTORY_SEPARATOR . IndiMedia::composeDirectoryName($indiMedia->indi()));
+                    if ($indiMedia->directory()->getPathname() === $di->getPathname()) {
+                        continue;
+                    }
                     rename($indiMedia->directory()->getPathname(), $di->getPathname());
-                    $this->writeMetaForIndi();
+                    $renamedIndiMedia = new IndiMedia(
+                        $indiMedia->indi(),
+                        $di,
+                        $indiMedia->meta()
+                    );
+                    $this->writeMetaForIndi($renamedIndiMedia);
+                    unset($old[$i]);
+                    $renamed[] = $renamedIndiMedia;
                 } else {
                     throw new \RuntimeException("Directory '{$indiMedia->directory()->getPathname()}' for existing media struct '{$indiMedia->indi()->xref()}' does not exist.");
                 }
@@ -48,6 +59,10 @@ class MediaStructureService
             $this->writeMetaForIndi($indiMedia);
         }
         $this->writeMetaForNew($this->directoryForNew);
+        $old = array_values($old);
+        $new = array_values(array_merge($new, $renamed));
+
+        return [$old, $new];
     }
 
     /**
@@ -129,16 +144,11 @@ class MediaStructureService
         return json_decode(file_get_contents($filename));
     }
 
-    private function writeMetaForIndi(IndiMedia $indiMedia, ?\SplFileInfo $di = null)
+    private function writeMetaForIndi(IndiMedia $indiMedia)
     {
         file_put_contents(
-            $di ? $di->getPathname() . DIRECTORY_SEPARATOR . self::METADATA_FILE
-                : $indiMedia->directory()->getPathname() . DIRECTORY_SEPARATOR . self::METADATA_FILE,
-            json_encode([
-                'isIndi' => true,
-                'xref' => $indiMedia->indi()->xref(),
-                'gedcom' => Formatter::composeLinesFromElement($indiMedia->indi()->node(), 0),
-            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            $indiMedia->directory()->getPathname() . DIRECTORY_SEPARATOR . self::METADATA_FILE,
+            json_encode($indiMedia->meta(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
         );
     }
 
