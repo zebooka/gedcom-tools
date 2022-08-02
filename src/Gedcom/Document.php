@@ -70,7 +70,7 @@ class Document
     /**
      * @param string $expression
      * @param \DOMNode|null $contextNode
-     * @return mixed|\DOMNodeList|\DOMNode|\DOMElement|\DOMAttr
+     * @return mixed|string|\DOMNodeList|\DOMNode|\DOMElement|\DOMAttr
      */
     public function xpath($expression, \DOMNode $contextNode = null)
     {

@@ -6,6 +6,7 @@ use Symfony\Component\Console\Application;
 use Zebooka\Gedcom\Application\Command\DatesCommand;
 use Zebooka\Gedcom\Application\Command\IdsRenameCommand;
 use Zebooka\Gedcom\Application\Command\LeafsCommand;
+use Zebooka\Gedcom\Application\Command\MediaCommand;
 use Zebooka\Gedcom\Application\Command\RomanizeCommand;
 
 class ConsoleApplicationFactory
@@ -19,6 +20,7 @@ class ConsoleApplicationFactory
 
         $a->add(new DatesCommand());
         $a->add(new IdsRenameCommand());
+        $a->add(new MediaCommand());
         $a->add(new LeafsCommand());
         $a->add(new RomanizeCommand());
 

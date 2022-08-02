@@ -2,15 +2,153 @@
 
 namespace Zebooka\Gedcom\Service;
 
+use Zebooka\Gedcom\Document;
+use Zebooka\Gedcom\Formatter;
+use Zebooka\Gedcom\Model\Indi;
+use Zebooka\Gedcom\Model\IndiMedia;
+
 class MediaStructureService
 {
-    const METADATA_FILE = '.ged';
+    const METADATA_FILE = '.gedcom-tools.json';
 
-    public function generateStructure($dir)
-    {}
+    /** @var Document */
+    private $gedcom;
+    /** @var \SplFileInfo */
+    private $directoryForNew;
 
-    public function readStructure($dir)
+    public function __construct(Document $gedcom)
     {
+        $this->gedcom = $gedcom;
+    }
 
+    public function generateStructure(\SplFileInfo $dir, $syncDirNames = false)
+    {
+        if (!$dir->isDir()) {
+            throw new \UnexpectedValueException("File '{$dir->getPathname()}' is not a directory.");
+        }
+        $this->directoryForNew = $dir;
+
+        $old = $this->readStructure($dir);
+        $new = $this->readGedcom($old);
+        if ($syncDirNames) {
+            foreach ($old as $indiMedia) {
+                if ($indiMedia->directory()->isDir()) {
+                    $di = new \SplFileInfo($indiMedia->directory()->getPath() . DIRECTORY_SEPARATOR . IndiMedia::composeDirectoryName($indiMedia->indi()));
+                    rename($indiMedia->directory()->getPathname(), $di->getPathname());
+                    $this->writeMetaForIndi();
+                } else {
+                    throw new \RuntimeException("Directory '{$indiMedia->directory()->getPathname()}' for existing media struct '{$indiMedia->indi()->xref()}' does not exist.");
+                }
+            }
+        }
+        foreach ($new as $indiMedia) {
+            if (!$indiMedia->directory()->isDir()) {
+                mkdir($indiMedia->directory()->getPathname(), 0777, true);
+            }
+            $this->writeMetaForIndi($indiMedia);
+        }
+        $this->writeMetaForNew($this->directoryForNew);
+    }
+
+    /**
+     * @param \SplFileInfo $dir
+     * @return IndiMedia[]
+     */
+    public function readStructure(\SplFileInfo $dir)
+    {
+        if (!$dir->isDir()) {
+            throw new \UnexpectedValueException("File '{$dir->getPathname()}' is not a directory.");
+        }
+        $this->directoryForNew = $dir;
+
+        $indiMedias = [];
+        foreach (
+            new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $this->directoryForNew->getRealPath(),
+                    \RecursiveDirectoryIterator::SKIP_DOTS
+                ),
+                \RecursiveIteratorIterator::SELF_FIRST
+            ) as $di
+        ) {
+            /** @var \SplFileInfo $di */
+            $metaFilename = $di->getRealPath() . DIRECTORY_SEPARATOR . self::METADATA_FILE;
+            if ($di->isDir() && file_exists($metaFilename)) {
+                $meta = $this->readMeta($metaFilename);
+                if (!empty($meta->isDirectoryForNew)) {
+                    $this->directoryForNew = $di;
+                } elseif (!empty($meta->xref) && $node = $this->gedcom->indiNode($meta->xref)) {
+                    $indiMedias[$meta->xref] = new IndiMedia(
+                        new Indi($node, $this->gedcom),
+                        $di,
+                        $meta
+                    );
+                }
+            }
+        }
+        return $indiMedias;
+    }
+
+    /**
+     * @param IndiMedia[] $excluded
+     * @return IndiMedia[]
+     */
+    public function readGedcom(array $excluded = [])
+    {
+        $xrefs = array_keys($excluded);
+        $indiMedias = [];
+        $existingsDirs = [];
+        foreach ($excluded as $indi) {
+            $existingsDirs[] = $indi->directory()->getPathname();
+        }
+        foreach ($this->gedcom->indiNode() as $node) {
+            $indi = new Indi($node, $this->gedcom);
+            if (in_array($indi->xref(), $xrefs)) {
+                continue;
+            }
+            $dirname = IndiMedia::composeDirectoryName($indi);
+            if (null === $dirname) {
+                continue; // we do not generate dirs for INDIs without names
+            }
+            $di = $this->directoryForNew . DIRECTORY_SEPARATOR . $dirname;
+            if (in_array($di, $existingsDirs)) {
+                $di .= " ({$indi->xref()})";
+            }
+            $existingsDirs[] = $di;
+            $indiMedias[$indi->xref()] = new IndiMedia(
+                $indi,
+                new \SplFileInfo($di),
+                (object)['xref' => $indi->xref()]
+            );
+        }
+        return $indiMedias;
+    }
+
+    private function readMeta($filename)
+    {
+        return json_decode(file_get_contents($filename));
+    }
+
+    private function writeMetaForIndi(IndiMedia $indiMedia, ?\SplFileInfo $di = null)
+    {
+        file_put_contents(
+            $di ? $di->getPathname() . DIRECTORY_SEPARATOR . self::METADATA_FILE
+                : $indiMedia->directory()->getPathname() . DIRECTORY_SEPARATOR . self::METADATA_FILE,
+            json_encode([
+                'isIndi' => true,
+                'xref' => $indiMedia->indi()->xref(),
+                'gedcom' => Formatter::composeLinesFromElement($indiMedia->indi()->node(), 0),
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        );
+    }
+
+    private function writeMetaForNew(\SplFileInfo $di)
+    {
+        file_put_contents(
+            $di->getPathname() . DIRECTORY_SEPARATOR . self::METADATA_FILE,
+            json_encode([
+                'isDirectoryForNew' => true,
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        );
     }
 }

@@ -30,6 +30,15 @@ abstract class NodeAbstract
         return $this->gedcom;
     }
 
+    /**
+     * @param string $expression
+     * @return mixed|string|\DOMNodeList|\DOMNode|\DOMElement|\DOMAttr
+     */
+    public function xpath($xpath)
+    {
+        return $this->gedcom->xpath($xpath, $this->node);
+    }
+
     public function nodeToGedcomString(): string
     {
         return Formatter::composeLinesFromElement($this->node, 0);

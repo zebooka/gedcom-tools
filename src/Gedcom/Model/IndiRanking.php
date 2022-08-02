@@ -6,7 +6,6 @@ class IndiRanking
 {
     /** @var Indi */
     private $indi;
-
     /** @var float */
     private $ranking;
 
