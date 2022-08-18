@@ -56,12 +56,12 @@ class MediaCommand extends AbstractCommand
 
         $results = [
             [$old, 'gray', 'bright-white'],
-            [$new, 'cyan', 'bright-green'],
+            [$new, $input->getOption(self::OPTION_DRY_RUN) ? 'magenta' : 'cyan', $input->getOption(self::OPTION_DRY_RUN) ? 'bright-red' : 'bright-green'],
         ];
         foreach ($results as list($indiMedias, $color1, $color2)) {
             /** @var IndiMedia[] $indiMedias */
             foreach ($indiMedias as $indi) {
-                $dir = $indi->directory()->getRealPath();
+                $dir = ($input->getOption(self::OPTION_DRY_RUN) ? $indi->directory()->getPathname() : $indi->directory()->getRealPath());
                 if ($output->isQuiet()) {
                     $output->writeln("{$indi->indi()->xref()}\t{$dir}", OutputInterface::VERBOSITY_QUIET);
                 } else {
