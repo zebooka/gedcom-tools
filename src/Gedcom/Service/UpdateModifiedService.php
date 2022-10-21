@@ -13,6 +13,13 @@ class UpdateModifiedService
     const CORP = 'Anton Bondar <zebooka@gmail.com>';
     const ADDR = 'https://github.com/zebooka/gedcom-tools';
 
+    private $updateSoftwareInfo;
+
+    public function __construct(bool $updateSoftwareInfo = true)
+    {
+        $this->updateSoftwareInfo = $updateSoftwareInfo;
+    }
+
     public function updateGedcomModificationDate(Document $gedcom)
     {
         /** @var \DOMElement $head */
@@ -21,15 +28,20 @@ class UpdateModifiedService
             throw new \UnexpectedValueException('Incorrect GEDCOM. No HEAD tag found.');
         }
 
-        $sour = $this->updateNodeValue($gedcom, $head, 'SOUR', self::SOUR);
-        $vers = $this->updateNodeValue($gedcom, $sour, 'VERS',
-            defined('\\Zebooka\\Gedcom\\Application::VERSION')
-                ? constant('\\Zebooka\\Gedcom\\Application::VERSION')
-                : '0.0.0-dev'
-        );
-        $name = $this->updateNodeValue($gedcom, $sour, 'NAME', self::NAME);
-        $corp = $this->updateNodeValue($gedcom, $sour, 'CORP', self::CORP);
-        $addr = $this->updateNodeValue($gedcom, $corp, 'ADDR', self::ADDR);
+        if ($this->updateSoftwareInfo) {
+            $sour = $this->updateNodeValue($gedcom, $head, 'SOUR', self::SOUR);
+            $vers = $this->updateNodeValue(
+                $gedcom,
+                $sour,
+                'VERS',
+                defined('\\Zebooka\\Gedcom\\Application::VERSION')
+                    ? constant('\\Zebooka\\Gedcom\\Application::VERSION')
+                    : '0.0.0-dev'
+            );
+            $name = $this->updateNodeValue($gedcom, $sour, 'NAME', self::NAME);
+            $corp = $this->updateNodeValue($gedcom, $sour, 'CORP', self::CORP);
+            $addr = $this->updateNodeValue($gedcom, $corp, 'ADDR', self::ADDR);
+        }
 
         $date = $this->updateNodeValue($gedcom, $head, 'DATE', strtoupper(date('j M Y')));
         $time = $this->updateNodeValue($gedcom, $date, 'TIME', strtoupper(date('H:i:s')));

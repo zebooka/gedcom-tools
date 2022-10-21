@@ -54,6 +54,23 @@ GED
         $this->assertEquals(UpdateModifiedService::NAME, $gedcom->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/G:NAME/@value)'));
         $this->assertEquals(UpdateModifiedService::CORP, $gedcom->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/G:CORP/@value)'));
         $this->assertEquals(UpdateModifiedService::ADDR, $gedcom->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/G:CORP/G:ADDR/@value)'));
+        $this->assertCount(1, $gedcom->xpath('//G:DATE'));
+    }
+
+    /**
+     * @dataProvider gedcomProvider
+     */
+    public function test_updateGedcomModificationDate_but_software($gedcomString)
+    {
+        $gedcom = Document::createFromGedcom($gedcomString);
+        $service = new UpdateModifiedService(false);
+        $service->updateGedcomModificationDate($gedcom);
+        $this->assertNotEquals(UpdateModifiedService::SOUR, $gedcom->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/@value)'));
+        $this->assertNotEquals('0.0.0-dev', $gedcom->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/G:VERS/@value)'));
+        $this->assertNotEquals(UpdateModifiedService::NAME, $gedcom->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/G:NAME/@value)'));
+        $this->assertNotEquals(UpdateModifiedService::CORP, $gedcom->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/G:CORP/@value)'));
+        $this->assertNotEquals(UpdateModifiedService::ADDR, $gedcom->xpath('string(/G:GEDCOM/G:HEAD/G:SOUR/G:CORP/G:ADDR/@value)'));
+        $this->assertCount(1, $gedcom->xpath('//G:DATE'));
     }
 
     public function test_updateGedcomModificationDate_fails_without_HEAD_tag()

@@ -17,6 +17,7 @@ class RomanizeCommand extends AbstractCommand
     const OPTION_OVERWRITE = 'overwrite';
     const OPTION_TRANSLITERATION = 'transliteration';
     const OPTION_ROMANIZED_TYPE = 'romanized-type';
+    const OPTION_NOWRITE_SOFTWARE = 'nowrite-software';
 
     protected static $defaultName = 'romanize';
 
@@ -27,6 +28,7 @@ class RomanizeCommand extends AbstractCommand
             ->setHelp('Romanize names and fix Ancestris space issue in NAME tag.');
 
         $this->addOption(self::OPTION_DRY_RUN, 'd', InputOption::VALUE_NONE, 'Perform romanizing, but do not save anything to file.');
+        $this->addOption(self::OPTION_NOWRITE_SOFTWARE, 'S', InputOption::VALUE_NONE, 'Do not update software info in the header of modified GEDCOM file.');
         $this->addOption(self::OPTION_OVERWRITE, 'o', InputOption::VALUE_NONE, 'Overwrite existing romanizations.');
         $this->addOption(self::OPTION_TRANSLITERATION, 't', InputOption::VALUE_REQUIRED, 'Transliteration ID. See php/icu docs for examples.', TransliteratorService::CYRILLIC);
         $this->addOption(self::OPTION_ROMANIZED_TYPE, 'r', InputOption::VALUE_REQUIRED, 'Romanized TYPE to write in tag. See GEDCOM docs.');
@@ -40,7 +42,7 @@ class RomanizeCommand extends AbstractCommand
         $gedcom = $this->getGedcom($input, $output);
 
         $t = new TransliteratorService($input->getOption(self::OPTION_TRANSLITERATION), $input->getOption(self::OPTION_ROMANIZED_TYPE));
-        $u = new UpdateModifiedService();
+        $u = new UpdateModifiedService($input->getOption(self::OPTION_NOWRITE_SOFTWARE));
         $service = new RomanizeService($t, $u);
         $err->writeln("--> Fixing names spaces", OutputInterface::VERBOSITY_NORMAL);
         $service->fixSpaceAroundFamilyName($gedcom);

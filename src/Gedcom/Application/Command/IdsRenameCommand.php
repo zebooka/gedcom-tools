@@ -16,6 +16,8 @@ class IdsRenameCommand extends AbstractCommand
 {
     const OPTION_DRY_RUN = 'dry-run';
     const OPTION_FORCE = 'force';
+    const OPTION_TRANSLITERATION = 'transliteration';
+    const OPTION_NOWRITE_SOFTWARE = 'nowrite-software';
 
     protected static $defaultName = 'ids';
 
@@ -27,6 +29,8 @@ class IdsRenameCommand extends AbstractCommand
 
         $this->addOption(self::OPTION_DRY_RUN, 'd', InputOption::VALUE_NONE, 'Perform IDs rename, but do not save anything to file.');
         $this->addOption(self::OPTION_FORCE, 'f', InputOption::VALUE_NONE, 'Force all xrefs to be renamed, unless new xref equals old except last sequence digit.');
+        $this->addOption(self::OPTION_NOWRITE_SOFTWARE, 'S', InputOption::VALUE_NONE, 'Do not update software info in the header of modified GEDCOM file.');
+        $this->addOption(self::OPTION_TRANSLITERATION, 't', InputOption::VALUE_REQUIRED, 'Transliteration ID. See php/icu docs for examples.', TransliteratorService::CYRILLIC);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -38,8 +42,8 @@ class IdsRenameCommand extends AbstractCommand
         $err->writeln("--> Making IDs fancy", OutputInterface::VERBOSITY_VERBOSE);
 
         $renameMap = [];
-        $t = new TransliteratorService();
-        $u = new UpdateModifiedService();
+        $t = new TransliteratorService($input->getOption(self::OPTION_TRANSLITERATION));
+        $u = new UpdateModifiedService($input->getOption(self::OPTION_NOWRITE_SOFTWARE));
         foreach ([new IndiXrefsRenameService($t, $u), new FamXrefsRenameService($t, $u)] as $service) {
             /** @var XrefsRenameServiceAbstract $service */
             $renameMap = array_merge(

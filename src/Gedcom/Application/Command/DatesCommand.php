@@ -12,6 +12,7 @@ use Zebooka\Gedcom\Service\UpdateModifiedService;
 class DatesCommand extends AbstractCommand
 {
     const OPTION_DRY_RUN = 'dry-run';
+    const OPTION_NOWRITE_SOFTWARE = 'nowrite-software';
 
     protected static $defaultName = 'dates';
 
@@ -22,6 +23,7 @@ class DatesCommand extends AbstractCommand
             ->setHelp('Optimize dates by dropping some of empty tags and adding some default values.');
 
         $this->addOption(self::OPTION_DRY_RUN, 'd', InputOption::VALUE_NONE, 'Optimize dates, but do not save anything to file.');
+        $this->addOption(self::OPTION_NOWRITE_SOFTWARE, 'S', InputOption::VALUE_NONE, 'Do not update software info in the header of modified GEDCOM file.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -32,7 +34,7 @@ class DatesCommand extends AbstractCommand
 
         $err->writeln("--> Optimizing dates", OutputInterface::VERBOSITY_NORMAL);
 
-        $c = new DatesService(new UpdateModifiedService());
+        $c = new DatesService(new UpdateModifiedService($input->getOption(self::OPTION_NOWRITE_SOFTWARE)));
         $c->addDatePlacForBirtDeatBuriCrem($gedcom);
         $c->setDeatBuriCremYifDateEmpty($gedcom);
         $c->removeDeatBuriCremYifDateNotEmpty($gedcom);
