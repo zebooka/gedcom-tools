@@ -34,7 +34,7 @@ class DatesCommand extends AbstractCommand
 
         $err->writeln("--> Optimizing dates", OutputInterface::VERBOSITY_NORMAL);
 
-        $c = new DatesService(new UpdateModifiedService($input->getOption(self::OPTION_NOWRITE_SOFTWARE)));
+        $c = new DatesService(new UpdateModifiedService(!$input->getOption(self::OPTION_NOWRITE_SOFTWARE)));
         $c->addDatePlacForBirtDeatBuriCrem($gedcom);
         $c->setDeatBuriCremYifDateEmpty($gedcom);
         $c->removeDeatBuriCremYifDateNotEmpty($gedcom);

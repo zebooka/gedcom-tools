@@ -42,7 +42,7 @@ class RomanizeCommand extends AbstractCommand
         $gedcom = $this->getGedcom($input, $output);
 
         $t = new TransliteratorService($input->getOption(self::OPTION_TRANSLITERATION), $input->getOption(self::OPTION_ROMANIZED_TYPE));
-        $u = new UpdateModifiedService($input->getOption(self::OPTION_NOWRITE_SOFTWARE));
+        $u = new UpdateModifiedService(!$input->getOption(self::OPTION_NOWRITE_SOFTWARE));
         $service = new RomanizeService($t, $u);
         $err->writeln("--> Fixing names spaces", OutputInterface::VERBOSITY_NORMAL);
         $service->fixSpaceAroundFamilyName($gedcom);
