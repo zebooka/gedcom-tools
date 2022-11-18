@@ -22,8 +22,7 @@ docker-images:
 
 composer: ## Install composer dependencies
 composer:
-	docker-compose run --rm -e COMPOSER_NO_DEV=1 -- php73 composer install -v -n -d /app
-	docker-compose run --rm -e COMPOSER_VENDOR_DIR=vendor-dev -- php73 composer install -v -n -d /app
+	docker-compose run --rm -- php73 composer install -v -n -d /app
 
 start: ## Start services in background
 start:
@@ -45,6 +44,7 @@ test:
 	docker-compose run --rm -- php81 /app/tests/run.sh
 
 build: clean
+	#docker-compose run --rm -e COMPOSER_NO_DEV=1 -- php73 composer install -v -n -d /app
 	docker-compose run --rm -e PHAR_SKELETON_ALIAS="gedcom-tools.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka\Gedcom\Application" -- php73 /app/build-phar.php
 
 clean: ## Clean built PHAR
