@@ -10,12 +10,17 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "Zebooka\\": "src/",
-            "Test\\Zebooka\\": "tests/unit/"
+            "Zebooka\\Gedcom\\": "src/"
         },
         "files": [
-            "src/functions.php"
+            "src/functions/general.php",
+            "src/functions/map.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\Zebooka\\Gedcom\\": ["tests/unit/", "tests/integration/"]
+        }
     },
     "require": {
         "php": "^7.3|^8.0",
