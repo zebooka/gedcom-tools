@@ -43,11 +43,8 @@ class LeafsService
             return $this->rankingsCache[$xref];
         }
 
-        $deatPenalty = 0.95;
-        $basic = 1;
         $sublingsCount = 1;
         $fatherRanking = $motherRanking = 0;
-        $cp = 1; // coefficient for parents weight
 
         // get family where indi is child
         $fam = $gedcom->xpath("/G:GEDCOM/G:FAM[G:CHIL/@pointer='{$xref}']")->item(0);
