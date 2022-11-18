@@ -4,6 +4,7 @@ namespace Zebooka\Gedcom\Model;
 
 use Zebooka\Gedcom\Document;
 use Zebooka\Gedcom\Formatter;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 use function Zebooka\Gedcom\descriptionOfAncestorNode;
 use function Zebooka\Gedcom\extractLatitude;
 use function Zebooka\Gedcom\extractLongitude;
@@ -18,6 +19,7 @@ class GpxWaypoint
     private $xrefs = [];
     private $timestamps = [];
     private $types = [];
+    private $dates = [];
     private $names = [];
     private $places = [];
 
@@ -36,8 +38,13 @@ class GpxWaypoint
         $this->xrefs[] = $xref = xrefOfAncestorNode($map);
         $this->timestamps[] = modificationTimeOfAncestorNode($map, $gedcom);
         $this->types[] = $map->parentNode->parentNode->nodeName;
-        $this->names[] = (descriptionOfAncestorNode($xref, $gedcom) ?? '?');
+        $this->names[] = (descriptionOfAncestorNode($xref, $gedcom) ?? $xref);
         $this->places[] = implode(', ', array_filter(array_map('trim', (array)explode(',', (string)$map->parentNode->getAttribute('value'))), 'strlen'));
+        if ($date = $gedcom->xpath('string(./G:DATE/@value)', $map->parentNode->parentNode)) {
+            $this->dates[] = DateFactory::fromString($date);
+        } else {
+            $this->dates[] = null;
+        }
     }
 
     public function appendWaypoint(GpxWaypoint $waypoint)
@@ -52,6 +59,7 @@ class GpxWaypoint
         $this->xrefs = array_merge($this->xrefs, $waypoint->xrefs);
         $this->timestamps = array_merge($this->timestamps, $waypoint->timestamps);
         $this->types = array_merge($this->types, $waypoint->types);
+        $this->dates = array_merge($this->dates, $waypoint->dates);
         $this->names = array_merge($this->names, $waypoint->names);
         $this->places = array_merge($this->places, $waypoint->places);
     }
@@ -82,9 +90,9 @@ class GpxWaypoint
     public function description(): string
     {
         $names = array_unique(
-            array_map(function (string $type, string $name) {
-                return "{$type} - {$name}";
-            }, $this->types, $this->names)
+            array_map(function (string $type, ?DateInterface $date, string $name) {
+                return ($date ? "{$type} ({$date}) - {$name}" : "{$type} - {$name}");
+            }, $this->types, $this->dates, $this->names)
         );
         $places = array_unique($this->places);
 
