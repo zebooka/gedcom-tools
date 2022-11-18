@@ -1,24 +1,35 @@
 {
-    "name": "zebooka/phar-skeleton",
-    "description": "Skeleton to build phar applications using Docker.",
+    "name": "zebooka/gedcom-tools",
+    "description": "Tools for making some actions on GEDCOM files.",
+    "authors": [
+        {
+            "name": "Anton Bondar",
+            "email": "zebooka@gmail.com"
+        }
+    ],
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Zebooka\\": "src/",
             "Test\\Zebooka\\": "tests/unit/"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "require": {
         "php": "^7.3|^8.0",
         "ext-dom": "*",
         "ext-intl": "*",
         "ext-json": "*",
+        "ext-libxml": "*",
         "ext-simplexml": "*",
         "fisharebest/ext-calendar": "^2.5",
         "symfony/console": "^5.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "mockery/mockery": "^1.5"
+        "mockery/mockery": "^1.5",
+        "php-cs-fixer/phpunit-constraint-xmlmatchesxsd": "^1.2"
     }
 }
