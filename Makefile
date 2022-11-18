@@ -1,4 +1,4 @@
-.PHONY: help all docker-images composer start stop test build clean purge
+.PHONY: help all docker-images composer composer-nodev start stop sh test build build-dev clean purge
 .DEFAULT := help
 
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -13,45 +13,41 @@ help:
 
 ##@ Development
 
-all: ## Setup, test & build phar
-all: docker-images composer test build
+all: docker-images composer test build-dev ## Setup, test & build phar
+	cd "${CURRENT_DIR}" && ./build/gedcom-tools.phar
 
 docker-images: ## Create docker images
-docker-images:
 	docker-compose up --no-start --build
 
 composer: ## Install composer dependencies
-composer:
 	docker-compose run --rm -- php73 composer install -v -n -d /app
 
+composer-nodev: ## Install composer without DEV dependencies
+	docker-compose run --rm -e COMPOSER_NO_DEV=1 -- php73 composer install -v -n -d /app
+
 start: ## Start services in background
-start:
 	docker-compose start
 
 stop: ## Stop services
-stop:
 	docker-compose stop
 
 sh: ## Open shell in container
-sh:
 	docker-compose exec -- php73 /bin/sh
 
 test: ## Run tests
-test:
 	docker-compose run --rm -- php73 /app/tests/run.sh
 	docker-compose run --rm -- php74 /app/tests/run.sh
 	docker-compose run --rm -- php80 /app/tests/run.sh
 	docker-compose run --rm -- php81 /app/tests/run.sh
 
-build: clean
-	#docker-compose run --rm -e COMPOSER_NO_DEV=1 -- php73 composer install -v -n -d /app
+build: clean composer-nodev build-dev ## Build PHAR
+
+build-dev: clean ## Build PHAR with DEV dependencies
 	docker-compose run --rm -e PHAR_SKELETON_ALIAS="gedcom-tools.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka\Gedcom\Application" -- php73 /app/build-phar.php
 
 clean: ## Clean built PHAR
-clean:
 	cd "${CURRENT_DIR}" && rm -fv ./build/gedcom-tools.phar
 
-purge: ## Stop, clean and remove all docker-images/logs/vendor files
-purge: stop clean
+purge: stop clean ## Stop, clean and remove all docker-images/logs/vendor files
 	docker-compose down --rmi local
 	cd "${CURRENT_DIR}" && rm -rfv ./log ./vendor ./vendor-dev
