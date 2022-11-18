@@ -23,33 +23,33 @@ class DatesServiceTest extends TestCase
 
     public function test_setDeatBuriCremYifDateEmpty()
     {
-        $gedcom = $this->gedcom(__DIR__ . '/../../../res/dates-service/initial.ged');
+        $gedcom = $this->gedcom(__DIR__ . '/../../res/dates-service/initial.ged');
         $this->service()->setDeatBuriCremYifDateEmpty($gedcom);
         $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(
-            "{$this->gedcom(__DIR__ . '/../../../res/dates-service/setDeatBuriCremYifDateEmpty.ged')}",
+            "{$this->gedcom(__DIR__ . '/../../res/dates-service/setDeatBuriCremYifDateEmpty.ged')}",
             "{$gedcom}"
         );
     }
 
     public function test_removeDeatBuriCremYifDateNotEmpty()
     {
-        $gedcom = $this->gedcom(__DIR__ . '/../../../res/dates-service/initial.ged');
+        $gedcom = $this->gedcom(__DIR__ . '/../../res/dates-service/initial.ged');
         $this->service()->removeDeatBuriCremYifDateNotEmpty($gedcom);
         $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(
-            "{$this->gedcom(__DIR__ . '/../../../res/dates-service/removeDeatBuriCremYifDateNotEmpty.ged')}",
+            "{$this->gedcom(__DIR__ . '/../../res/dates-service/removeDeatBuriCremYifDateNotEmpty.ged')}",
             "{$gedcom}"
         );
     }
 
     public function test_addDatePlacForBirtDeatBuriCrem()
     {
-        $gedcom = $this->gedcom(__DIR__ . '/../../../res/dates-service/initial.ged');
+        $gedcom = $this->gedcom(__DIR__ . '/../../res/dates-service/initial.ged');
         $this->service()->addDatePlacForBirtDeatBuriCrem($gedcom);
         $this->fixGedcomModifiedDate($gedcom);
         $this->assertEquals(
-            "{$this->gedcom(__DIR__ . '/../../../res/dates-service/addDatePlacForBirtDeatBuriCrem.ged')}",
+            "{$this->gedcom(__DIR__ . '/../../res/dates-service/addDatePlacForBirtDeatBuriCrem.ged')}",
             "{$gedcom}"
         );
     }

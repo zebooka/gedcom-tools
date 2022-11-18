@@ -14,7 +14,7 @@ class FamXrefsRenameServiceTest extends TestCase
 
     private function gedcom()
     {
-        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom.ged'));
+        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../res/gedcom.ged'));
     }
 
     private function service()
@@ -106,7 +106,7 @@ class FamXrefsRenameServiceTest extends TestCase
         $service = $this->service();
         $service->renameXrefs($gedcom);
         $this->fixGedcomModifiedDate($gedcom);
-        $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_fam.ged'), "{$gedcom}");
+        $this->assertEquals(file_get_contents(__DIR__ . '/../../res/gedcom_xrefs_fam.ged'), "{$gedcom}");
     }
 
     public function test_renameXrefs_force()
@@ -115,6 +115,6 @@ class FamXrefsRenameServiceTest extends TestCase
         $service = $this->service();
         $service->renameXrefs($gedcom, [], true);
         $this->fixGedcomModifiedDate($gedcom);
-        $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_fam_force.ged'), "{$gedcom}");
+        $this->assertEquals(file_get_contents(__DIR__ . '/../../res/gedcom_xrefs_fam_force.ged'), "{$gedcom}");
     }
 }

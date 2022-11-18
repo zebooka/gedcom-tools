@@ -11,7 +11,7 @@ class MediaStructureServiceTest extends TestCase
 {
     private function gedcom()
     {
-        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom_media.ged'));
+        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../res/gedcom_media.ged'));
     }
 
     private function service(Document $gedcom = null)
@@ -24,7 +24,7 @@ class MediaStructureServiceTest extends TestCase
         $gedcom = $this->gedcom();
         $service = $this->service($gedcom);
 
-        $list = $service->readStructure(new \SplFileInfo(__DIR__ . '/../../../res/media-service'));
+        $list = $service->readStructure(new \SplFileInfo(__DIR__ . '/../../res/media-service'));
         $this->assertIsArray($list);
         $this->assertCount(1, $list);
         $this->assertEquals('2000 FAMILY Son Name', IndiMedia::composeDirectoryName($list['SON']->indi()));

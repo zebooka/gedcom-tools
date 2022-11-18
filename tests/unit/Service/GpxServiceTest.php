@@ -12,17 +12,17 @@ class GpxServiceTest extends TestCase
 {
     private function gedcomWithoutMap()
     {
-        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom.ged'));
+        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../res/gedcom.ged'));
     }
 
     private function gedcomWithMap()
     {
-        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom_with_map.ged'));
+        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../res/gedcom_with_map.ged'));
     }
 
     private function gpxXSD()
     {
-        return file_get_contents(__DIR__ . '/../../../res/gpx.xsd');
+        return file_get_contents(__DIR__ . '/../../res/gpx.xsd');
     }
 
     public function test_generateGpx_returns_null_on_gedcom_without_map_tags()

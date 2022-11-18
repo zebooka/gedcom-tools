@@ -14,7 +14,7 @@ class IndiXrefsRenameServiceTest extends TestCase
 
     private function gedcom()
     {
-        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom.ged'));
+        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../res/gedcom.ged'));
     }
 
     private function service()
@@ -107,7 +107,7 @@ class IndiXrefsRenameServiceTest extends TestCase
         $service = $this->service();
         $service->renameXrefs($gedcom);
         $this->fixGedcomModifiedDate($gedcom);
-        $this->assertEquals(file_get_contents(__DIR__ . '/../../../res/gedcom_xrefs_indi.ged'), "{$gedcom}");
+        $this->assertEquals(file_get_contents(__DIR__ . '/../../res/gedcom_xrefs_indi.ged'), "{$gedcom}");
     }
 
     public function dataProvider_isSameSeqencedXref()

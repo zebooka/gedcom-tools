@@ -13,7 +13,7 @@ class IndiTest extends TestCase
 
     private function gedcom()
     {
-        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../../res/gedcom.ged'));
+        return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../res/gedcom.ged'));
     }
 
     public function test_father()
