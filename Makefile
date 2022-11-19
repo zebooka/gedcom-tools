@@ -50,4 +50,4 @@ clean: ## Clean built PHAR
 
 purge: stop clean ## Stop, clean and remove all docker-images/logs/vendor files
 	docker-compose down --rmi local
-	cd "${CURRENT_DIR}" && rm -rfv ./log ./vendor ./vendor-dev
+	cd "${CURRENT_DIR}" && rm -rfv ./log ./vendor
