@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Zebooka\Gedcom\Model\Date;
+namespace Zebooka\Gedcom\Model\Date;
 
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;

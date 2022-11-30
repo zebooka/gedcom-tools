@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Zebooka\Gedcom\Model;
+namespace Zebooka\Gedcom\Model;
 
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateGregorian;

@@ -19,7 +19,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Test\\Zebooka\\Gedcom\\": ["tests/unit/", "tests/integration/"]
+            "Zebooka\\Gedcom\\": ["tests/unit/", "tests/integration/"]
         }
     },
     "require": {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Zebooka\Gedcom\Service;
+namespace Zebooka\Gedcom\Service;
 
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Zebooka\Gedcom\Service;
+namespace Zebooka\Gedcom\Service;
 
 use Jasny\PHPUnit\Constraint\XSDValidation;
 use PhpCsFixer\PhpunitConstraintXmlMatchesXsd\Constraint\XmlMatchesXsd;

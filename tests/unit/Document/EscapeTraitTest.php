@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Zebooka\Gedcom\Document;
+namespace Zebooka\Gedcom\Document;
 
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Document;
