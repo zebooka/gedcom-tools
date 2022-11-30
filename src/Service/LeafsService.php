@@ -3,6 +3,9 @@
 namespace Zebooka\Gedcom\Service;
 
 use Zebooka\Gedcom\Document;
+use Zebooka\Gedcom\Model\Date\DateCalendar;
+use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 use Zebooka\Gedcom\Model\Indi;
 use Zebooka\Gedcom\Model\IndiRanking;
 
@@ -68,11 +71,27 @@ class LeafsService
             }
         }
 
-        return $this->rankingsCache[$xref] = $this->rankingFormula($fatherRanking, $motherRanking, $sublingsCount, $indi->isDead());
+        return $this->rankingsCache[$xref] = $this->rankingFormula(
+            $fatherRanking,
+            $motherRanking,
+            $sublingsCount,
+            $indi->isDead(),
+            $indi->birt(),
+            $indi->deat()
+        );
     }
 
-    public function rankingFormula(float $fatherRanking, float $motherRanking, int $sublingsCount, bool $isDead)
-    {
-        return (1 + sqrt($fatherRanking * $fatherRanking + $motherRanking * $motherRanking) + log($sublingsCount)) * ($isDead ? 0.95 : 1);
+    public function rankingFormula(
+        float $fatherRanking,
+        float $motherRanking,
+        int $sublingsCount,
+        bool $isDead,
+        ?DateInterface $birt,
+        ?DateInterface $deat
+    ): float {
+        return (1 + sqrt($fatherRanking * $fatherRanking + $motherRanking * $motherRanking) + log($sublingsCount))
+            * ($isDead ? 0.95 : 1)
+            * ($birt instanceof DateInterface ? ($birt instanceof DateCalendarInterface ? 1.02 : 1.01) : 1)
+            * ($deat instanceof DateInterface ? ($deat instanceof DateCalendarInterface ? 1.02 : 1.01) : 1);
     }
 }

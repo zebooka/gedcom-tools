@@ -2,13 +2,17 @@
 
 namespace Test\Zebooka\Gedcom\Service;
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Document;
+use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
 use Zebooka\Gedcom\Model\IndiRanking;
 use Zebooka\Gedcom\Service\LeafsService;
 
 class LeafsServiceTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private function gedcom()
     {
         return Document::createFromGedcom(file_get_contents(__DIR__ . '/../../res/gedcom.ged'));
@@ -17,7 +21,7 @@ class LeafsServiceTest extends TestCase
     public function gedcomToLeafsLadderProvider()
     {
         return [
-            'Equal grands' => ['GRANDFATHER', 0, 'GRANDMOTHER'],
+            'Equal grands' => ['GRANDFATHER', -1, 'GRANDMOTHER'],
             'Grand less then father' => ['GRANDFATHER', -1, 'FATHER'],
             'Father with his parents is higher that mother without' => ['FATHER', 1, 'MOTHER'],
             'Dead is less than living' => ['UNCLE', -1, 'FATHER'],
@@ -40,14 +44,30 @@ class LeafsServiceTest extends TestCase
         $this->assertIsArray($indiRankings);
         $this->assertCount(9, $indiRankings);
         $this->assertContainsOnlyInstancesOf(IndiRanking::class, $indiRankings);
-        $this->assertEquals($eq, $indiRankings[$a]->ranking() <=> $indiRankings[$b]->ranking());
+        $this->assertEquals(
+            $eq,
+            $indiRankings[$a]->ranking() <=> $indiRankings[$b]->ranking(),
+            "{$indiRankings[$a]->ranking()} <=> {$indiRankings[$b]->ranking()}"
+        );
     }
 
     public function test_rankingFormula()
     {
         $service = new LeafsService();
-        $this->assertEqualsWithDelta((1 + sqrt(1 * 1 + 2 * 2) + log(3)), $service->rankingFormula(1, 2, 3, false), PHP_FLOAT_EPSILON);
-        $this->assertEqualsWithDelta((1 + sqrt(1.5 * 1.5 + 2.1 * 2.1) + log(2)) * 0.95, $service->rankingFormula(1.5, 2.1, 2, true), PHP_FLOAT_EPSILON);
-        $this->assertEqualsWithDelta((1 + sqrt(4 * 4 + 0.95 * 0.95) + log(1)), $service->rankingFormula(4, 0.95, 1, false), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(
+            (1 + sqrt(1 * 1 + 2 * 2) + log(3)),
+            $service->rankingFormula(1, 2, 3, false, null, null),
+            PHP_FLOAT_EPSILON
+        );
+        $this->assertEqualsWithDelta(
+            (1 + sqrt(1.5 * 1.5 + 2.1 * 2.1) + log(2)) * 0.95 * 1.02,
+            $service->rankingFormula(1.5, 2.1, 2, true, \Mockery::mock(DateCalendarInterface::class), null),
+            PHP_FLOAT_EPSILON
+        );
+        $this->assertEqualsWithDelta(
+            (1 + sqrt(4 * 4 + 0.95 * 0.95) + log(1)),
+            $service->rankingFormula(4, 0.95, 1, false, null, null),
+            PHP_FLOAT_EPSILON
+        );
     }
 }

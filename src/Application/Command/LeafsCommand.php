@@ -57,7 +57,7 @@ class LeafsCommand extends AbstractCommand
                 $color = ($indiRanking->indi()->isDead() ? 'fg=gray' : 'fg=bright-white');
                 $output->writeln(
                     "<{$color}>{$ranking} -- " .
-                    ($indiRanking->indi()->isLeaf() ? "<fg=black;bg=green>{$indiRanking->indi()->xref()}</>" : $indiRanking->indi()->xref()) .
+                    ($indiRanking->indi()->isLeaf() ? "<fg=green>{$indiRanking->indi()->xref()}</>" : $indiRanking->indi()->xref()) .
                     " -- {$name} --</> <fg=green>{$dates}</>",
                     OutputInterface::VERBOSITY_NORMAL
                 );
