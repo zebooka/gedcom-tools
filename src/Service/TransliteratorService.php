@@ -4,7 +4,8 @@ namespace Zebooka\Gedcom\Service;
 
 class TransliteratorService
 {
-    const CYRILLIC = 'ru-ru_Latn/BGN; Latin; ASCII; [\'·] Remove';
+//    const CYRILLIC = 'ru-ru_Latn/BGN; Latin; ASCII; [\'·] Remove';
+    const CYRILLIC = 'ru-ru_Latn/BGN; Latin; ASCII; NFD; [:Nonspacing Mark:] Remove; [\'ʹ·] Remove; NFC';
 
     /** @var \Transliterator */
     private $transliterator;
