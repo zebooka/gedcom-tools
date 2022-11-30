@@ -6,6 +6,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Zebooka\Gedcom\Document;
 use Zebooka\Gedcom\Model\Date\DateCalendar\DateCalendarInterface;
+use Zebooka\Gedcom\Model\Date\DateInterface;
 use Zebooka\Gedcom\Model\IndiRanking;
 use Zebooka\Gedcom\Service\LeafsService;
 
@@ -65,8 +66,18 @@ class LeafsServiceTest extends TestCase
             PHP_FLOAT_EPSILON
         );
         $this->assertEqualsWithDelta(
+            (1 + sqrt(1.5 * 1.5 + 2.1 * 2.1) + log(2)) * 0.95 * 1.02 * 1.01,
+            $service->rankingFormula(1.5, 2.1, 2, true, \Mockery::mock(DateCalendarInterface::class), \Mockery::mock(DateInterface::class)),
+            PHP_FLOAT_EPSILON
+        );
+        $this->assertEqualsWithDelta(
             (1 + sqrt(4 * 4 + 0.95 * 0.95) + log(1)),
             $service->rankingFormula(4, 0.95, 1, false, null, null),
+            PHP_FLOAT_EPSILON
+        );
+        $this->assertEqualsWithDelta(
+            (1 + sqrt(1.5 * 1.5 + 2.1 * 2.1) + log(2)) * 1.01,
+            $service->rankingFormula(1.5, 2.1, 2, false, \Mockery::mock(DateInterface::class), null),
             PHP_FLOAT_EPSILON
         );
     }
