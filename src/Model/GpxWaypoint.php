@@ -9,6 +9,7 @@ use function Zebooka\Gedcom\descriptionOfAncestorNode;
 use function Zebooka\Gedcom\extractLatitude;
 use function Zebooka\Gedcom\extractLongitude;
 use function Zebooka\Gedcom\modificationTimeOfAncestorNode;
+use function Zebooka\Gedcom\numberToSuperscript;
 use function Zebooka\Gedcom\xrefOfAncestorNode;
 
 class GpxWaypoint
@@ -22,6 +23,15 @@ class GpxWaypoint
     private $dates = [];
     private $names = [];
     private $places = [];
+
+    private static $sortWeights = [
+        'BIRT' => -100,
+        'RESI' => -90,
+        'MARR' => -50,
+        'DEAT' => 80,
+        'CREM' => 90,
+        'BURI' => 100,
+    ];
 
     public function __construct(\DOMElement $map, Document $gedcom)
     {
@@ -62,6 +72,8 @@ class GpxWaypoint
         $this->dates = array_merge($this->dates, $waypoint->dates);
         $this->names = array_merge($this->names, $waypoint->names);
         $this->places = array_merge($this->places, $waypoint->places);
+
+        $this->sort();
     }
 
     /**
@@ -87,6 +99,14 @@ class GpxWaypoint
         return max($this->timestamps);
     }
 
+    public function name(): string
+    {
+        $names = array_count_values($this->types);
+        return implode('+', array_map(function ($type, $count) {
+            return $type . numberToSuperscript($count);
+        }, array_keys($names), $names));
+    }
+
     public function description(): string
     {
         $names = array_unique(
@@ -108,5 +128,28 @@ class GpxWaypoint
     {
         $types = array_unique($this->types);
         return (count($types) === 1 ? $types[0] : null);
+    }
+
+    public function sort(): void
+    {
+        $points = array_map(
+            function ($xref, $timestamp, $type, $date, $name, $place) {
+                return [$xref, $timestamp, $type, $date, $name, $place];
+            },
+            $this->xrefs, $this->timestamps, $this->types, $this->dates, $this->names, $this->places
+        );
+        usort($points, function ($a, $b) {
+            return ((self::$sortWeights[$a[2]] ?? 0) <=> (self::$sortWeights[$b[2]] ?? 0))
+                ?: ($a[0] <=> $b[0]);
+        });
+        $this->xrefs = $this->timestamps = $this->types = $this->dates = $this->names = $this->places = [];
+        foreach ($points as list($xref, $timestamp, $type, $date, $name, $place)) {
+            $this->xrefs[] = $xref;
+            $this->timestamps[] = $timestamp;
+            $this->types[] = $type;
+            $this->dates[] = $date;
+            $this->names[] = $name;
+            $this->places[] = $place;
+        }
     }
 }

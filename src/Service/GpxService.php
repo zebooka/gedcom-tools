@@ -78,7 +78,7 @@ GPX;
         return <<<GPX
     <wpt lat="{$waypoint->latitude()}" lon="{$waypoint->longitude()}">
         <time>{$this->formatTime($waypoint->timestamp())}</time>
-        <name></name>
+        <name>{$waypoint->name()}</name>
         <cmt><![CDATA[{$waypoint->comment()}]]></cmt>
         <desc><![CDATA[{$waypoint->description()}]]></desc>
         <type>{$waypoint->type()}</type>

@@ -56,3 +56,15 @@ function descriptionOfAncestorNode($xref, Document $gedcom): ?string
         return null;
     }
 }
+
+function numberToSuperscript(int $num): string
+{
+    if ($num == 1) {
+        return '';
+    }
+    $num = str_split((string)$num);
+    $num = array_map(function ($n) {
+        return ['&#8304;', '&#185;', '&#178;', '&#179;', '&#8308;', '&#8309;', '&#8310;', '&#8311;', '&#8312;', '&#8313;'][$n] ?? $n;
+    }, $num);
+    return html_entity_decode(implode('', $num));
+}
