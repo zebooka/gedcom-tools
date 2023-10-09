@@ -101,6 +101,21 @@ class GpxWaypoint
 
     public function name(): string
     {
+        $placeName = $this->namePlace();
+        return $placeName ? "{$placeName} ({$this->nameTypes()})" : $this->nameTypes();
+    }
+
+    public function namePlace(): string
+    {
+        $places = array_unique(array_map(function($place){
+            return trim(explode(',', $place)[0]);
+        }, $this->places));
+
+        return $places ? $places[0] : '';
+    }
+
+    public function nameTypes(): string
+    {
         $names = array_count_values($this->types);
         return implode('+', array_map(function ($type, $count) {
             return $type . numberToSuperscript($count);
