@@ -6,7 +6,8 @@ RUN apk update && apk add \
     ca-certificates \
     openssh \
     git \
-    icu-dev
+    icu-dev \
+    icu-data-full
 
 RUN docker-php-ext-configure intl && docker-php-ext-install intl
 

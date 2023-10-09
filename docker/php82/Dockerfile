@@ -1,6 +1,6 @@
 FROM php:8.2-fpm-alpine
 
-COPY --from=composer:2.3 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 RUN apk update && apk add \
     ca-certificates \
