@@ -28,6 +28,7 @@ class GpxWaypoint
         'BIRT' => -100,
         'RESI' => -90,
         'MARR' => -50,
+        'OCCU' => -30,
         'DEAT' => 80,
         'CREM' => 90,
         'BURI' => 100,
